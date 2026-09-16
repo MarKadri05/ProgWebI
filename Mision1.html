@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misión 1 - El Oráculo de los Números</title>
+    <link rel="stylesheet" href="Mision1.css">
+    <script src="Mision1.js" defer></script>
+</head>
+<body>
+    <main class="card">
+        <h1>🔮 El Oráculo de los Números</h1>
+        <p class="instrucciones">Adivina el número secreto entre 1 y 100.</p>
+
+        <div class="input-group">
+            <input type="number" id="numero-input" placeholder="Ej: 50" min="1" max="100">
+            <button id="comprobar-btn">Probar suerte</button>
+        </div>
+
+        <p id="mensaje-feedback" class="feedback"></p>
+        <p id="marcador" class="intentos">Intentos realizados: 0</p>
+        <p id="historial-intentos" class="historial">Historial de numeros introducidos: </p>
+
+        <button id="reiniciar-btn" class="btn-secundario">Reiniciar partida</button>
+    </main>
+</body>
+</html>

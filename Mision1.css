@@ -1,0 +1,121 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #0f172a;
+    color: #f8fafc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.card {
+    background-color: #1e293b;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    max-width: 440px;
+    width: 100%;
+    border: 1px solid #334155;
+}
+
+h1 {
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+    color: #fbbf24;
+}
+
+.instrucciones {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+}
+
+input[type="number"] {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    background-color: #0f172a;
+    color: #ffffff;
+    font-size: 1rem;
+    outline: none;
+}
+
+input[type="number"]:focus {
+    border-color: #fbbf24;
+}
+
+button {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+    background-color: #6366f1;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+button:hover {
+    background-color: #4f46e5;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+button:disabled {
+    background-color: #475569;
+    color: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secundario {
+    background-color: transparent;
+    border: 1px solid #475569;
+    color: #cbd5e1;
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+.btn-secundario:hover {
+    background-color: #334155;
+    color: #ffffff;
+}
+
+.feedback {
+    font-size: 1.05rem;
+    font-weight: 600;
+    min-height: 2rem;
+    margin-bottom: 1rem;
+    color: #38bdf8;
+}
+
+.intentos {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    margin-bottom: 0.5rem;
+}
+
+.historial {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    font-style: italic;
+    min-height: 1.2rem;
+}
