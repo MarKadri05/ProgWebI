@@ -1,0 +1,21 @@
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Configuración local de VS Code / IDEs
+.vscode/
+.idea/
+
+# Logs de error
+*.log
+npm-debug.log*
+
+# Entorno y variables privadas (para cuando uses .env)
+.env
+.env.local
+
+# Dependencias y compilados (para futuras entregas)
+node_modules/
+dist/
+build/
+.next/
