@@ -1,8 +1,11 @@
+# Obsidian (Configuraciones locales, temas, plugins y caché gráfico)
+.obsidian/
+
 # Archivos del sistema operativo
 .DS_Store
 Thumbs.db
 
-# Configuración local de VS Code / IDEs
+# Ajustes locales de VS Code
 .vscode/
 .idea/
 
@@ -10,11 +13,11 @@ Thumbs.db
 *.log
 npm-debug.log*
 
-# Entorno y variables privadas (para cuando uses .env)
+# Variables de entorno y credenciales
 .env
 .env.local
 
-# Dependencias y compilados (para futuras entregas)
+# Futuras misiones con Node / Vite / React / Next.js
 node_modules/
 dist/
 build/
