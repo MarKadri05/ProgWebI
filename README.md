@@ -8,7 +8,7 @@ Repositorio personal destinado al desarrollo y documentación de las **tareas op
 
 Este proyecto forma parte de las actividades prácticas de la asignatura **Programación Web I: Cliente** (3.º curso del Grado en Ingeniería del Software, U-tad). 
 
-En el marco de la asignatura se permite el uso de herramientas de Inteligencia Artificial Generativa como asistentes de desarrollo. No obstante, se aplica estrictamente la **Regla de Oro**:
+En el marco de la asignatura se permite el uso de herramientas de Inteligencia Artificial Generativa como asistentes de desarrollo. No obstante, se aplica strictly la **Regla de Oro**:
 > *"La nota evalúa la comprensión del código, no la capacidad de generarlo. Cada línea de código debe poder ser explicada, defendida y modificada en vivo durante las defensas orales individuales."*
 
 ---
@@ -16,6 +16,7 @@ En el marco de la asignatura se permite el uso de herramientas de Inteligencia A
 ## Índice de Entregas Opcionales
 
 | Unidad | Misión / Temática | Estado | Enlace al código |
+| :---: | :--- | :---: | :--- |
 | **U1** | Misión 1: El oráculo de los números | 🟢 Completado | [Mision1.html](./Mision1.html) |
 | **U1** | Misión 2: *Pendiente por realizar* | 🔴 Pendiente | *Próximamente* |
 | **U1** | Misión 3: *Pendiente por realizar* | 🔴 Pendiente | *Próximamente* |
@@ -72,9 +73,10 @@ Desarrollo de un juego completo en el navegador donde el jugador debe adivinar u
 ## Ejecución Local
 
 Para probar esta Misión 1 en local:
+
 ```bash
 # 1. Clonar el repositorio
-git clone [https://github.com/MarKadri05/ProgWebI-Opcionales.git](https://github.com/MarKadri05/ProgWebI-Opcionales.git)
+git clone https://github.com/MarKadri05/ProgWebI-Opcionales.git
 
 # 2. Acceder a la carpeta del proyecto
 cd ProgWebI-Opcionales
