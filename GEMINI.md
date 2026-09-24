@@ -21,6 +21,14 @@
 - **Cero `.forEach()`:** Evitar `.forEach()`. Sustituirlo por `.filter()` cuando se requiera iterar o filtrar elementos.
 - **Robustez y Control:** Envolver operaciones propensas a fallar (interacciones DOM, peticiones, parsing) en bloques `try...catch`.
 
+## ⚠️ Prohibiciones Estrictas
+- **Cero handlers inline:** Prohibido `onclick="..."` o similares en el HTML. Todo mediante `addEventListener` desde JS.
+- **Cero `var`:** Uso de `const` por defecto y `let` solo si cambia[cite: 4, 9].
+- **Cero `innerHTML` con datos de usuario:** Usar siempre `textContent` para prevenir XSS[cite: 4, 9].
+- **Separación estricta:** HTML, CSS y JS en archivos propios independientes.
+- **Limpieza de código:** Cero `console.log` de depuración olvidados y cero código muerto comentado.
+- **Historial de Commits:** Mínimo 5 commits repartidos por fases (se cuentan dentro de la subcarpeta que se entrega).
+
 ---
 
 ## Comentarios y Defensa Oral
