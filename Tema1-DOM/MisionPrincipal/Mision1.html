@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Misión 1 · Juego de Memoria (DOM)</title>
+  <link rel="stylesheet" href="Mision1.css">
+</head>
+<body>
+  <header class="game-header">
+    <h1>Memory DOM</h1>
+    <p class="subtitle">Misión 1 · Programación Web I</p>
+  </header>
+
+  <main class="game-container">
+    <!-- Panel de Configuración -->
+    <section class="controls-panel">
+      <form id="game-form" class="game-form">
+        <div class="input-group">
+          <label for="rows-input">Filas:</label>
+          <input type="number" id="rows-input" name="rows" min="2" max="6" value="4" required>
+        </div>
+
+        <div class="input-group">
+          <label for="cols-input">Columnas:</label>
+          <input type="number" id="cols-input" name="cols" min="2" max="6" value="4" required>
+        </div>
+
+        <!-- CERO handlers inline (nada de onclick="iniciar()") -->
+        <button type="submit" id="btn-start">Iniciar Partida</button>
+      </form>
+    </section>
+
+    <!-- Marcadores y Estado -->
+    <section class="status-panel">
+      <div class="stats">
+        <p>Intentos: <span id="moves-counter">0</span></p>
+        <p>Parejas: <span id="pairs-counter">0</span></p>
+      </div>
+      <!-- role="alert" y aria-live para feedback accesible de errores (try...catch) -->
+      <p id="status-message" class="status-message" role="alert" aria-live="polite"></p>
+    </section>
+
+    <!-- Contenedor del Tablero (Delegación de eventos aquí) -->
+    <section id="board" class="board" aria-label="Tablero de cartas">
+      <!-- Las cartas se generarán dinámicamente desde JS en la Fase 3 -->
+    </section>
+  </main>
+
+  <script src="Mision1.js" defer></script>
+</body>
+</html>

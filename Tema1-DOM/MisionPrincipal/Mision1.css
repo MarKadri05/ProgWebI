@@ -1,0 +1,155 @@
+:root {
+  --cols: 4;
+  --bg-color: #0f172a;
+  --card-bg-front: #1e293b;
+  --card-bg-back: #38bdf8;
+  --card-matched: #10b981;
+  --text-color: #f8fafc;
+  --error-color: #ef4444;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+.game-container {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Formulario y Controles */
+.game-form {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  align-items: center;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+input[type="number"] {
+  width: 60px;
+  padding: 0.4rem;
+  border-radius: 4px;
+  border: 1px solid #475569;
+  background: #1e293b;
+  color: #fff;
+  font-size: 1rem;
+  text-align: center;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+/* Panel de estado */
+.stats {
+  display: flex;
+  justify-content: space-around;
+  font-weight: 600;
+}
+
+.status-message {
+  min-height: 1.5rem;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.status-message.error {
+  color: var(--error-color);
+}
+
+/* --- TABLERO Y EFECTO 3D DE CARTAS --- */
+.board {
+  display: grid;
+  /* Rejilla controlada dinámicamente mediante la variable --cols */
+  grid-template-columns: repeat(var(--cols), 1fr);
+  gap: 10px;
+  perspective: 1000px; /* Profundidad para el giro 3D */
+  width: 100%;
+}
+
+.card {
+  aspect-ratio: 3 / 4;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Estado volteado: gira 180 grados */
+.card.is-flipped {
+  transform: rotateY(180deg);
+}
+
+/* Caras de la carta */
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  border-radius: 8px;
+  backface-visibility: hidden; /* Oculta el reverso mientras gira */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+/* Cara oculta (por defecto al frente) */
+.card-front {
+  background-color: var(--card-bg-front);
+  border: 2px solid #334155;
+  color: #64748b;
+}
+
+/* Cara descubierta (con el número, rotada inicialmente) */
+.card-back {
+  background-color: var(--card-bg-back);
+  color: #0f172a;
+  transform: rotateY(180deg);
+}
+
+/* Estado de carta emparejada (acierto) */
+.card.is-matched {
+  cursor: default;
+  pointer-events: none; /* Evita nuevos clics */
+}
+
+.card.is-matched .card-back {
+  background-color: var(--card-matched);
+  color: #ffffff;
+}
