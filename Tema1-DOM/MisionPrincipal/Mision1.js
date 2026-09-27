@@ -94,6 +94,53 @@ function generarParejas(numParejas) {
   console.log('Cartas listas en memoria:', tableroCartas);
 }
 
+/**
+ * Crea e inyecta dinámicamente las cartas en el DOM respetando las normas de seguridad.
+ */
+function renderizarTablero() {
+  if (!contenedorTablero) return;
+
+  // 1. Limpiamos el contenido anterior del tablero de forma segura
+  contenedorTablero.textContent = '';
+
+  // 2. Usamos un DocumentFragment para evitar repintados (reflows) innecesarios en el DOM
+  const fragmento = document.createDocumentFragment();
+
+  // 3. Transformamos cada número del array en un nodo HTML usando .map()
+  // QUÉ HACE: Mapea cada valor a una carta 3D completa.
+  // POR QUÉ: No usamos bucles 'for' ni '.forEach()', cumpliendo la regla de clase.
+  tableroCartas.map((numero, indice) => {
+    // Contenedor principal de la carta (.card)
+    const carta = document.createElement('div');
+    carta.classList.add('card');
+    // Guardamos el índice y el número en datasets para identificarlos al hacer clic
+    carta.dataset.index = indice;
+    carta.dataset.value = numero;
+
+    // Cara frontal (oculta por defecto)
+    const caraFrontal = document.createElement('div');
+    caraFrontal.classList.add('card-face', 'card-front');
+    // Muestra un símbolo genérico mientras está boca abajo
+    caraFrontal.textContent = '❓';
+
+    // Cara trasera (descubierta, contiene el número)
+    const caraTrasera = document.createElement('div');
+    caraTrasera.classList.add('card-face', 'card-back');
+    // USO SEGURO DE textContent (evita XSS frente a innerHTML)
+    caraTrasera.textContent = numero;
+
+    // Ensamblamos la carta
+    carta.appendChild(caraFrontal);
+    carta.appendChild(caraTrasera);
+
+    // La agregamos al fragmento en memoria
+    fragmento.appendChild(carta);
+  });
+
+  // 4. Inyectamos todo el conjunto de golpe en el DOM
+  contenedorTablero.appendChild(fragmento);
+}
+
 // ==========================================
 // 4. MANEJO DE EVENTOS (FORMULARIO)
 // ==========================================
@@ -110,10 +157,44 @@ if (formularioJuego) {
 
     // Validar dimensiones ingresadas
     const parejasNecesarias = validarDimensionesTablero(filas, columnas);
-
-    // Si la validación fue exitosa, se genera el modelo de cartas
+    
+    // Si la validación fue exitosa, se genera el modelo de cartas y se dibuja
     if (parejasNecesarias !== null) {
       generarParejas(parejasNecesarias);
+      renderizarTablero(); // <-- ¡Llamar aquí!
     }
+  });
+}
+
+// ==========================================
+// 5. DELEGACIÓN DE EVENTOS (CLIC EN CARTAS)
+// ==========================================
+
+if (contenedorTablero) {
+  contenedorTablero.addEventListener('click', (evento) => {
+    // Subir desde el origen del clic (event.target) hasta encontrar la tarjeta .card más cercana
+    const cartaPulsada = evento.target.closest('.card');
+
+    // VALIDACIÓN TEMPRANA:
+    // Ignorar clic si:
+    // - No se pulsó una carta.
+    // - El tablero está bloqueado.
+    // - La carta ya está volteada o emparejada.
+    if (
+      !cartaPulsada || 
+      bloqueoTablero || 
+      cartaPulsada.classList.contains('is-flipped') || 
+      cartaPulsada.classList.contains('is-matched')
+    ) {
+      return;
+    }
+
+    // Voltear la carta visualmente añadiendo la clase CSS
+    cartaPulsada.classList.add('is-flipped');
+
+    // Imprimir el valor para verificar el funcionamiento
+    console.log('Carta volteada:', cartaPulsada.dataset.value);
+
+    // (La lógica del turno/parejas de la Fase 4 irá aquí)
   });
 }
