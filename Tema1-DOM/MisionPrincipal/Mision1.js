@@ -6,7 +6,7 @@
 let filas = 4;
 let columnas = 4;
 
-// Array que almacenará la secuencia de números/parejas mezcladas. Guarda valores en memoria como [0, 0, 1, 1...] de forma aleatoria.
+// Array que almacenará la secuencia de números/parejas mezcladas. Guarda valores en memoria de forma aleatoria.
 // POR QUÉ: Mantiene la lógica desacoplada del DOM.
 // ALTERNATIVA DESCARTADA: Leer el número directamente del HTML (por seguridad y limpieza).
 let tableroCartas = [];
@@ -16,7 +16,7 @@ let primeraCarta = null;
 let segundaCarta = null;
 let bloqueoTablero = false; // Bloquea clics mientras se comprueba una pareja con setTimeout
 let intentos = 0; // Contador de movimientos realizados
-let parejasEncontradas = 0; // Contador de parejas descubiertas
+let parejasEncontradas = 0;
 
 // ==========================================
 // 2. SELECCIÓN DE ELEMENTOS DEL DOM
@@ -54,7 +54,7 @@ function validarDimensionesTablero(numFilas, numColumnas) {
 
     // Limpiar mensajes de error y clases de fallo previas en el DOM
     if (mensajeEstado) {
-      mensajeEstado.textContent = '¡Tablero válido! Generando partida...';
+      mensajeEstado.textContent = '';
       mensajeEstado.classList.remove('error');
     }
 
@@ -92,8 +92,6 @@ function generarParejas(numParejas) {
 
   // 3. Mezclar array usando .toSorted()
   tableroCartas = parejas.toSorted(() => Math.random() - 0.5);
-
-  console.log('Cartas listas en memoria:', tableroCartas);
 }
 
 /**
@@ -200,6 +198,28 @@ function comprobarPareja() {
   }
 }
 
+/**
+ * Reinicia el juego al estado inicial manteniendo la misma partida sin recargar la página web.
+ */
+function reiniciarJuego() {
+  // 1. Resetear los contadores y el estado del turno
+  intentos = 0;
+  parejasEncontradas = 0;
+  resetearTurno();
+  actualizarMarcador();
+
+  // 2. Limpiar mensajes
+  if (mensajeEstado) {
+    mensajeEstado.textContent = '';
+    mensajeEstado.classList.remove('error');
+  }
+
+  // 3. Dibujar el tablero.
+  // QUÉ HACE: Renderiza usando el array tableroCartas actual.
+  // POR QUÉ: Al no llamar a generarParejas(), las cartas mantienen sus posiciones originales.
+  renderizarTablero();
+}
+
 // ==========================================
 // 4. MANEJO DE EVENTOS (FORMULARIO)
 // ==========================================
@@ -228,6 +248,19 @@ if (formularioJuego) {
       renderizarTablero();
     }
   });
+
+  // Botón de reiniciar
+const botonReiniciar = document.querySelector('#btn-reset');
+
+if (botonReiniciar) {
+  // Escuchar clic y llamada a la función
+  botonReiniciar.addEventListener('click', () => {
+    // Evitar reiniciar si el array está vacío
+    if (tableroCartas.length > 0) {
+      reiniciarJuego();
+    }
+  });
+}
 }
 
 // ==========================================
@@ -238,8 +271,7 @@ if (contenedorTablero) {
   contenedorTablero.addEventListener('click', (evento) => {
     const cartaPulsada = evento.target.closest('.card');
 
-    // Ignorar si no es carta, si el tablero está bloqueado, si la carta ya está volteada/emparejada 
-    // o si es la misma primera carta pulsada de nuevo.
+    // Ignorar si no es carta, si el tablero está bloqueado, si la carta ya está volteada/emparejada o si es la misma
     if (
       !cartaPulsada || 
       bloqueoTablero || 
@@ -261,8 +293,20 @@ if (contenedorTablero) {
       intentos++;
       actualizarMarcador();
 
-      // Lanzamos la comprobación
       comprobarPareja();
     }
   });
 }
+
+// ==========================================
+// 6. RETO BONUS: MODO OSCURO CON TECLA SECRETA
+// ==========================================
+
+// Escuchamos el evento keydown globalmente en el documento
+document.addEventListener('keydown', (evento) => {
+  // Verificamos si la tecla pulsada es la 'n' o 'N'
+  if (evento.key.toLowerCase() === 'n') {
+    // Alternamos la clase 'dark-mode' en el body
+    document.body.classList.toggle('dark-mode');
+  }
+});

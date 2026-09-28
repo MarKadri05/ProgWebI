@@ -73,6 +73,14 @@ button:hover {
   background: #1d4ed8;
 }
 
+button.btn-secondary {
+  background: #475569;
+}
+
+button.btn-secondary:hover {
+  background: #334155;
+}
+
 /* Panel de estado */
 .stats {
   display: flex;
@@ -152,4 +160,10 @@ button:hover {
 .card.is-matched .card-back {
   background-color: var(--card-matched);
   color: #ffffff;
+}
+
+body.dark-mode {
+  --bg-color: #020617;
+  --card-bg-front: #0f172a;
+  background-color: var(--bg-color);
 }
