@@ -2,19 +2,25 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <!-- Viewport responsive para correcta adaptación a pantallas móviles -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Misión 1 · Juego de Memoria (DOM)</title>
+  <!-- Enlace a la hoja de estilos externa -->
   <link rel="stylesheet" href="Mision1.css">
 </head>
 <body>
+  <!-- Cabecera principal de la aplicación -->
   <header class="game-header">
     <h1>Memory DOM</h1>
     <p class="subtitle">Misión 1 · Programación Web I</p>
   </header>
 
+  <!-- Contenedor principal de la interfaz del juego -->
   <main class="game-container">
-    <!-- Panel de Configuración -->
+    
+    <!-- Panel de Configuración del Tablero -->
     <section class="controls-panel">
+      <!-- Formulario para captura de datos sin handlers inline (prohibido onclick) -->
       <form id="game-form" class="game-form">
         <div class="input-group">
           <label for="rows-input">Filas:</label>
@@ -26,28 +32,30 @@
           <input type="number" id="cols-input" name="cols" min="2" max="6" value="4" required>
         </div>
 
-        <!-- CERO handlers inline (nada de onclick="iniciar()") -->
+        <!-- Botones de acción del formulario -->
         <button type="submit" id="btn-start">Nueva Partida</button>
         <button type="button" id="btn-reset" class="btn-secondary">Reiniciar</button>
       </form>
     </section>
 
-    <!-- Marcadores y Estado -->
+    <!-- Panel de Marcadores y Feedback Accesible -->
     <section class="status-panel">
       <div class="stats">
         <p>Intentos: <span id="moves-counter">0</span></p>
         <p>Parejas: <span id="pairs-counter">0</span></p>
       </div>
-      <!-- role="alert" y aria-live para feedback accesible de errores (try...catch) -->
+      <!-- Atributos role="alert" y aria-live="polite" para lectura accesible de errores por lectores de pantalla -->
       <p id="status-message" class="status-message" role="alert" aria-live="polite"></p>
     </section>
 
-    <!-- Contenedor del Tablero (Delegación de eventos aquí) -->
+    <!-- Contenedor del Tablero: Las cartas se inyectan dinámicamente desde JS. 
+         Se aplica delegación de eventos escuchando desde este nodo padre (#board) -->
     <section id="board" class="board" aria-label="Tablero de cartas">
-      <!-- Las cartas se generarán dinámicamente desde JS en la Fase 3 -->
+      <!-- Cero HTML estático de cartas: se genera mediante DocumentFragment desde Mision1.js -->
     </section>
   </main>
 
+  <!-- Script JS modular cargado con el atributo 'defer' para asegurar que el DOM esté parseado antes de ejecutar -->
   <script src="Mision1.js" defer></script>
 </body>
 </html>

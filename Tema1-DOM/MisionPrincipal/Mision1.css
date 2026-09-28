@@ -1,5 +1,11 @@
+/* ==========================================================================
+   1. VARIABLES DE TEMA (Variables CSS nativas)
+   ========================================================================== */
 :root {
+  /* Variable dinámica modificada desde JS para controlar las columnas de la rejilla Grid */
   --cols: 4;
+  
+  /* Paleta de colores del tema claro/defecto */
   --bg-color: #0f172a;
   --card-bg-front: #1e293b;
   --card-bg-back: #38bdf8;
@@ -8,6 +14,9 @@
   --error-color: #ef4444;
 }
 
+/* ==========================================================================
+   2. REGLAS BASE Y RESETEO
+   ========================================================================== */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -25,6 +34,7 @@ body {
   padding: 2rem 1rem;
 }
 
+/* Layout del contenedor principal */
 .game-container {
   width: 100%;
   max-width: 600px;
@@ -33,7 +43,9 @@ body {
   gap: 1.5rem;
 }
 
-/* Formulario y Controles */
+/* ==========================================================================
+   3. FORMULARIO Y CONTROLES DE INTERFAZ
+   ========================================================================== */
 .game-form {
   display: flex;
   justify-content: center;
@@ -81,7 +93,9 @@ button.btn-secondary:hover {
   background: #334155;
 }
 
-/* Panel de estado */
+/* ==========================================================================
+   4. PANEL DE ESTADO Y MARCADORES
+   ========================================================================== */
 .stats {
   display: flex;
   justify-content: space-around;
@@ -98,31 +112,35 @@ button.btn-secondary:hover {
   color: var(--error-color);
 }
 
-/* --- TABLERO Y EFECTO 3D DE CARTAS --- */
+/* ==========================================================================
+   5. TABLERO Y ANIMACIÓN 3D DE CARTAS
+   ========================================================================== */
+
+/* Rejilla controlada mediante la variable CSS var(--cols) inyectada desde JS */
 .board {
   display: grid;
-  /* Rejilla controlada dinámicamente mediante la variable --cols */
   grid-template-columns: repeat(var(--cols), 1fr);
   gap: 10px;
-  perspective: 1000px; /* Profundidad para el giro 3D */
+  perspective: 1000px; /* Perspective para habilitar la profundidad del giro 3D */
   width: 100%;
 }
 
+/* Contenedor principal de la carta */
 .card {
   aspect-ratio: 3 / 4;
   position: relative;
-  transform-style: preserve-3d;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d; /* Mantiene la tridimensionalidad de los nodos hijos */
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* Transición suave de rotación */
   cursor: pointer;
   user-select: none;
 }
 
-/* Estado volteado: gira 180 grados */
+/* Estado volteado: Aplica una rotación de 180 grados sobre el eje Y */
 .card.is-flipped {
   transform: rotateY(180deg);
 }
 
-/* Caras de la carta */
+/* Configuración compartida de las caras frontal y trasera */
 .card-face {
   position: absolute;
   width: 100%;
@@ -133,28 +151,28 @@ button.btn-secondary:hover {
   font-size: 1.8rem;
   font-weight: 700;
   border-radius: 8px;
-  backface-visibility: hidden; /* Oculta el reverso mientras gira */
+  backface-visibility: hidden; /* Oculta el reverso para que no trasluzca durante la vuelta */
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
 }
 
-/* Cara oculta (por defecto al frente) */
+/* Cara oculta (visible cuando la carta está boca abajo) */
 .card-front {
   background-color: var(--card-bg-front);
   border: 2px solid #334155;
   color: #64748b;
 }
 
-/* Cara descubierta (con el número, rotada inicialmente) */
+/* Cara descubierta (contiene el valor numérico, rotada 180° inicialmente) */
 .card-back {
   background-color: var(--card-bg-back);
   color: #0f172a;
   transform: rotateY(180deg);
 }
 
-/* Estado de carta emparejada (acierto) */
+/* Estado emparejado (Acierto): Inhabilita nuevos clics mediante pointer-events */
 .card.is-matched {
   cursor: default;
-  pointer-events: none; /* Evita nuevos clics */
+  pointer-events: none;
 }
 
 .card.is-matched .card-back {
@@ -162,6 +180,10 @@ button.btn-secondary:hover {
   color: #ffffff;
 }
 
+/* ==========================================================================
+   6. MODO OSCURO (RETO BONUS - TECLA SECRETA)
+   ========================================================================== */
+/* Sobrescribe las variables del root cuando la clase .dark-mode está activa en el body */
 body.dark-mode {
   --bg-color: #020617;
   --card-bg-front: #0f172a;
