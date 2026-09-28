@@ -9,8 +9,8 @@
   - *Objetivo:* Creación imperativa segura de nodos DOM (`createElement` + `textContent`) e inserción eficiente con `DocumentFragment`; listener único en `#board` mediante delegación con `closest('.card')`.
 - [x] **Fase 4: Máquina de Estados del Juego (Volteo, Bloqueo y Emparejamiento)**
   - *Objetivo:* Lógica de turnos (`primeraCarta`, `segundaCarta`, `bloqueoTablero`), retardo con `setTimeout` para fallo y detección de condición de victoria.
-- [ ] **Fase 5: Reseteo, Accesibilidad y Preparación de la Defensa Oral**
-  - *Objetivo:* Botón/flujo de reinicio, pulido de comentarios pedagógicos, redacción final de `Decisiones-Autopsia.md` y simulación de preguntas de examen.
+- [x] **Fase 5: Reseteo, Accesibilidad y Preparación de la Defensa Oral**
+  - *Objetivo:* Botón de reinicio conservando tablero activo, pulido de mensajes, atajo de teclado para modo nocturno y redacción del README.md final.
 
 ---
 
@@ -53,14 +53,23 @@
 - **QUÉ HACE:** Utiliza la variable booleana `bloqueoTablero` y un `setTimeout` de 1000 ms para retrasar el volteo de cartas en caso de fallo, bloqueando cualquier otro clic mientras transcurre el temporizador.
 - **POR QUÉ:** Permite que el usuario retenga visualmente los números durante 1 segundo, evitando la desincronización de variables de estado ante clics rápidos no deseados.
 - **ALTERNATIVA DESCARTADA:** Voltear de inmediato sin retardo. Descartada porque arruina la jugabilidad (no da tiempo a ver los números) y genera inconsistencias si el jugador pulsa varias cartas seguidas.
+
+### Decisión 7 (JS - Fase 5): Reseteo de Partida Conservando el Barajado en Memoria
+- **QUÉ HACE:** La función `reiniciarJuego()` restablece contadores e invoca directamente `renderizarTablero()` sin ejecutar `generarParejas()`.
+- **POR QUÉ:** Permite re-intentar la misma disposición de cartas que se tenía en la partida activa en lugar de generar un tablero completamente distinto, delimitando la función del botón "Iniciar" frente al botón "Reiniciar".
+- **ALTERNATIVA DESCARTADA:** Recarga de la página mediante `location.reload()` o regeneración del vector aleatorio. Se descarta por mala experiencia de usuario y por imprecisión semántica en la interacción del formulario.
+
 ---
 
 ## 3. Registro de Prompts y Verificación con IA
 - **Tareas delegadas:**
   1. Diseño del algoritmo funcional para duplicar parejas numéricas sin bucles imperativos y estructura de control de excepciones.
   2. Arquitectura de renderizado con `DocumentFragment` y patrón de delegación de eventos con `closest()`.
+  3. Estrategia de preservación del modelo de datos para el reseteo de la partida activa.
 - **Método de verificación en DevTools:**
-  1. **Consola:** Introducción intencionada de dimensiones impares (ej. 3x3) para verificar en el panel *Console* y en el DOM que salta la excepción del `try...catch` sin romper la ejecución.
-  2. **Inspección de memoria:** Comprobación del array `tableroCartas` en consola para verificar que contiene exactamente `(filas * columnas) / 2` pares idénticos distribuidos aleatoriamente.
-  3. **Event Listeners tab:** Inspección en las DevTools del nodo `#board` para confirmar que existe **un único listener de click**, verificando que los nodos individuales `.card` no tienen listeners propios vinculados.
-  4. **Elements tab:** Verificación de la propiedad CSS dinámica `--cols` inyectada en el elemento `#board` y de las clases `.is-flipped` al hacer clic.
+  1. **Consola:** Introducción intencionada de dimensiones impares (ej. 3x3) para verificar que salta la excepción del `try...catch` en `#status-message` sin romper la ejecución.
+  2. **Inspección de memoria:** Comprobación del array `tableroCartas` en consola para verificar que se mantiene intacto al pulsar "Reiniciar".
+  3. **Event Listeners tab:** Inspección del nodo `#board` confirmando que existe un **único listener de click**.
+  4. **Elements tab:** Verificación de la propiedad CSS dinámica `--cols` inyectada en `#board` y de la clase `.dark-mode` al presionar la tecla secreta `'n'`.
+
+  ---
