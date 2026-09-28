@@ -15,6 +15,8 @@ let tableroCartas = [];
 let primeraCarta = null;
 let segundaCarta = null;
 let bloqueoTablero = false; // Bloquea clics mientras se comprueba una pareja con setTimeout
+let intentos = 0; // Contador de movimientos realizados
+let parejasEncontradas = 0; // Contador de parejas descubiertas
 
 // ==========================================
 // 2. SELECCIÓN DE ELEMENTOS DEL DOM
@@ -100,24 +102,24 @@ function generarParejas(numParejas) {
 function renderizarTablero() {
   if (!contenedorTablero) return;
 
-  // 1. Limpiamos el contenido anterior del tablero de forma segura
+  // 1. Limpiar el contenido anterior del tablero de forma segura
   contenedorTablero.textContent = '';
 
-  // 2. Usamos un DocumentFragment para evitar repintados (reflows) innecesarios en el DOM
+  // 2. Usar un DocumentFragment para evitar repintados (reflows) innecesarios en el DOM
   const fragmento = document.createDocumentFragment();
 
-  // 3. Transformamos cada número del array en un nodo HTML usando .map()
+  // 3. Transformar cada número del array en un nodo HTML usando .map()
   // QUÉ HACE: Mapea cada valor a una carta 3D completa.
   // POR QUÉ: No usamos bucles 'for' ni '.forEach()', cumpliendo la regla de clase.
   tableroCartas.map((numero, indice) => {
     // Contenedor principal de la carta (.card)
     const carta = document.createElement('div');
     carta.classList.add('card');
-    // Guardamos el índice y el número en datasets para identificarlos al hacer clic
+    // Guardar el índice y el número en datasets para identificarlos al hacer clic
     carta.dataset.index = indice;
     carta.dataset.value = numero;
 
-    // Cara frontal (oculta por defecto)
+    // Cara frontal (oculta, muestra un símbolo genérico)
     const caraFrontal = document.createElement('div');
     caraFrontal.classList.add('card-face', 'card-front');
     // Muestra un símbolo genérico mientras está boca abajo
@@ -126,19 +128,76 @@ function renderizarTablero() {
     // Cara trasera (descubierta, contiene el número)
     const caraTrasera = document.createElement('div');
     caraTrasera.classList.add('card-face', 'card-back');
-    // USO SEGURO DE textContent (evita XSS frente a innerHTML)
+    // textContent (evita XSS frente a innerHTML)
     caraTrasera.textContent = numero;
 
-    // Ensamblamos la carta
+    // Ensamblar carta
     carta.appendChild(caraFrontal);
     carta.appendChild(caraTrasera);
 
-    // La agregamos al fragmento en memoria
+    // Agregar al fragmento en memoria
     fragmento.appendChild(carta);
   });
 
-  // 4. Inyectamos todo el conjunto de golpe en el DOM
+  // 4. Inyectar todo el conjunto de golpe en el DOM
   contenedorTablero.appendChild(fragmento);
+}
+
+/**
+ * Restablece las variables de control de cartas y libera el bloqueo del tablero.
+ */
+function resetearTurno() {
+  primeraCarta = null;
+  segundaCarta = null;
+  bloqueoTablero = false;
+}
+
+/**
+ * Actualiza los valores de los contadores en la interfaz del DOM.
+ */
+function actualizarMarcador() {
+  if (contadorMovimientos) {
+    contadorMovimientos.textContent = intentos;
+  }
+  if (contadorParejas) {
+    contadorParejas.textContent = parejasEncontradas;
+  }
+}
+
+/**
+ * Compara si las dos cartas seleccionadas tienen el mismo valor.
+ */
+function comprobarPareja() {
+  // Leer el atributo dataset.value que guardamos al renderizar cada carta
+  const esIgual = primeraCarta.dataset.value === segundaCarta.dataset.value;
+
+  if (esIgual) {
+    // ACIERTO: Añadir la clase de emparejada a ambas
+    primeraCarta.classList.add('is-matched');
+    segundaCarta.classList.add('is-matched');
+
+    parejasEncontradas++;
+    actualizarMarcador();
+    resetearTurno();
+
+    // Verificar si se ha ganado la partida
+    const totalParejasPosibles = (filas * columnas) / 2;
+    if (parejasEncontradas === totalParejasPosibles && mensajeEstado) {
+      mensajeEstado.textContent = '🎉 ¡Enhorabuena! Has completado el juego.';
+    }
+
+  } else {
+    // FALLO: Bloquear tablero temporalmente mientras transcurre la animación
+    bloqueoTablero = true;
+
+    // Con setTimeout espera 1 segundo antes de taparlas
+    setTimeout(() => {
+      primeraCarta.classList.remove('is-flipped');
+      segundaCarta.classList.remove('is-flipped');
+
+      resetearTurno(); // Liberar el tablero para el siguiente turno
+    }, 1000);
+  }
 }
 
 // ==========================================
@@ -160,8 +219,13 @@ if (formularioJuego) {
     
     // Si la validación fue exitosa, se genera el modelo de cartas y se dibuja
     if (parejasNecesarias !== null) {
+      // Reiniciar contadores y estado del juego
+      intentos = 0;
+      parejasEncontradas = 0;
+      actualizarMarcador();
+      resetearTurno();
       generarParejas(parejasNecesarias);
-      renderizarTablero(); // <-- ¡Llamar aquí!
+      renderizarTablero();
     }
   });
 }
@@ -172,29 +236,33 @@ if (formularioJuego) {
 
 if (contenedorTablero) {
   contenedorTablero.addEventListener('click', (evento) => {
-    // Subir desde el origen del clic (event.target) hasta encontrar la tarjeta .card más cercana
     const cartaPulsada = evento.target.closest('.card');
 
-    // VALIDACIÓN TEMPRANA:
-    // Ignorar clic si:
-    // - No se pulsó una carta.
-    // - El tablero está bloqueado.
-    // - La carta ya está volteada o emparejada.
+    // Ignorar si no es carta, si el tablero está bloqueado, si la carta ya está volteada/emparejada 
+    // o si es la misma primera carta pulsada de nuevo.
     if (
       !cartaPulsada || 
       bloqueoTablero || 
       cartaPulsada.classList.contains('is-flipped') || 
-      cartaPulsada.classList.contains('is-matched')
+      cartaPulsada.classList.contains('is-matched') ||
+      cartaPulsada === primeraCarta
     ) {
       return;
     }
 
-    // Voltear la carta visualmente añadiendo la clase CSS
+    // 1. Voltear carta
     cartaPulsada.classList.add('is-flipped');
 
-    // Imprimir el valor para verificar el funcionamiento
-    console.log('Carta volteada:', cartaPulsada.dataset.value);
+    // 2. Gestionar secuencia del turno
+    if (!primeraCarta) {
+      primeraCarta = cartaPulsada;
+    } else {
+      segundaCarta = cartaPulsada;
+      intentos++;
+      actualizarMarcador();
 
-    // (La lógica del turno/parejas de la Fase 4 irá aquí)
+      // Lanzamos la comprobación
+      comprobarPareja();
+    }
   });
 }

@@ -7,7 +7,7 @@
   - *Objetivo:* Validación matemática de paridad con excepciones controladas, generación funcional inmutable de parejas y barajado en memoria (`tableroCartas`).
 - [x] **Fase 3: Renderizado Dinámico Seguro y Delegación de Eventos**
   - *Objetivo:* Creación imperativa segura de nodos DOM (`createElement` + `textContent`) e inserción eficiente con `DocumentFragment`; listener único en `#board` mediante delegación con `closest('.card')`.
-- [ ] **Fase 4: Máquina de Estados del Juego (Volteo, Bloqueo y Emparejamiento)**
+- [x] **Fase 4: Máquina de Estados del Juego (Volteo, Bloqueo y Emparejamiento)**
   - *Objetivo:* Lógica de turnos (`primeraCarta`, `segundaCarta`, `bloqueoTablero`), retardo con `setTimeout` para fallo y detección de condición de victoria.
 - [ ] **Fase 5: Reseteo, Accesibilidad y Preparación de la Defensa Oral**
   - *Objetivo:* Botón/flujo de reinicio, pulido de comentarios pedagógicos, redacción final de `Decisiones-Autopsia.md` y simulación de preguntas de examen.
@@ -49,6 +49,10 @@
 - **POR QUÉ:** Inmunidad total contra inyecciones XSS y máxima optimización de rendimiento al provocar un único repintado (layout/reflow) del navegador.
 - **ALTERNATIVA DESCARTADA:** Inyectar strings de HTML mediante plantillas literales con `board.innerHTML += '...'`. Descartada por vulnerabilidad a XSS y por obligar al navegador a re-parsear y destruir el árbol DOM en cada iteración.
 
+### Decisión 6 (JS - Fase 4): Asincronía con `setTimeout` y Bloqueo de Tablero
+- **QUÉ HACE:** Utiliza la variable booleana `bloqueoTablero` y un `setTimeout` de 1000 ms para retrasar el volteo de cartas en caso de fallo, bloqueando cualquier otro clic mientras transcurre el temporizador.
+- **POR QUÉ:** Permite que el usuario retenga visualmente los números durante 1 segundo, evitando la desincronización de variables de estado ante clics rápidos no deseados.
+- **ALTERNATIVA DESCARTADA:** Voltear de inmediato sin retardo. Descartada porque arruina la jugabilidad (no da tiempo a ver los números) y genera inconsistencias si el jugador pulsa varias cartas seguidas.
 ---
 
 ## 3. Registro de Prompts y Verificación con IA
