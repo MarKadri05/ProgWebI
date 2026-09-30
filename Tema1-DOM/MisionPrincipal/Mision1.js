@@ -108,7 +108,7 @@ function renderizarTablero() {
 
   // 3. Transformar cada número del array en un nodo HTML usando .map()
   // QUÉ HACE: Mapea cada valor a una carta 3D completa.
-  // POR QUÉ: No usamos bucles 'for' ni '.forEach()', cumpliendo la regla de clase.
+  // POR QUÉ: No usa bucles 'for' ni '.forEach()', cumpliendo la regla de clase.
   tableroCartas.map((numero, indice) => {
     // Contenedor principal de la carta (.card)
     const carta = document.createElement('div');
