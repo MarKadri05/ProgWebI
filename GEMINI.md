@@ -51,7 +51,7 @@
 ---
 
 ## Temario
-> **Estado de clase:** Actualmente se ha trabajado en clase hasta la **Unidad 1 (U1)**. Ignorar el resto del temario para la misión actual.
+> **Estado de clase:** Actualmente se ha trabajado en clase hasta la **Unidad 3 (U3)**. Ignorar el temario posterior para la misión actual.
 
 1. **U1 · El Despertar del DOM:** HTML, CSS, Vanilla JS, Eventos y Delegación (Sin React ni bibliotecas)[cite: 2, 7, 9].
 2. **U2 · JS Avanzado & Asincronía:** Closures, Promesas, `async/await`, Fetch API, Módulos ES, Vite[cite: 7, 8, 9].

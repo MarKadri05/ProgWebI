@@ -22,3 +22,7 @@ node_modules/
 dist/
 build/
 .next/
+
+# Caché local de Vite y Linters
+.vite/
+.eslintcache
