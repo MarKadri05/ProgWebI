@@ -1,6 +1,6 @@
 import PokemonCard from './PokemonCard.jsx';
 
-export function PokemonGrid({ pokemons }) {
+export default function PokemonGrid({ pokemons }) {
   return (
     <div className="pokemon-grid">
       {pokemons.map((pokemon) => (
