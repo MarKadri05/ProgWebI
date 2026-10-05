@@ -35,7 +35,7 @@ De acuerdo con la **Regla de Oro** de la asignatura, la Inteligencia Artificial 
 
 ### Prompts Reales Utilizados
 
-> Rellenar esto con un prompt real
+> *"Actúa como mi compañero de programación (pair programmer) y evaluador exigente para la Misión 2 (M2 · Async Odyssey) de la asignatura Programación Web I (Cliente). Lee el archivo GEMINI.md en la raíz del repositorio para conocer las normas globales de clase, las convenciones de la asignatura y la rúbrica. Voy a construir mi aplicación web con Vite + React (JSX) consumiendo la API pública PokeAPI..."*
 
 ### Método de Verificación
 
@@ -45,14 +45,14 @@ Inspección directa desde las **DevTools de Chrome** (pestañas *Network* y *Con
 
 ## 🔬 Sección Obligatoria: Autopsia (Decisiones Técnicas)
 
-### 1. Estructura Multicapa (Módulos ES) vs Monolito (`.js` vs `.jsx`)
+### 1. Abstracción en Capa de Servicios (`pokemonService.js`) y Verificación Estricta de `response.ok`
 
-- **Qué:** Se extrae toda la lógica de peticiones HTTP y consumo de datos a un módulo JavaScript puro (`src/services/pokemonService.js`), importándolo posteriormente dentro de los componentes JSX.
-- **Por qué:** Mantiene una separación estricta de responsabilidades, facilita la reutilización y el testing, evita el alto acoplamiento en componentes visuales y simplifica la depuración de errores de red.
-- **Alternativa descartada:** Escribir las peticiones `fetch` directamente dentro de un `useEffect` en `App.jsx`. Se descarta para evitar que el componente visual tenga demasiadas responsabilidades.
+- **Qué:** Se extrae toda la lógica de red y peticiones HTTP a un módulo JavaScript puro (`src/services/PokemonService.js`), evaluando explícitamente `if (!response.ok)` y lanzando un `Error` manual antes de procesar el JSON.
+- **Por qué:** Desacopla la lógica de infraestructura de la presentación en React, respetando el principio de responsabilidad única (SRP). Además, la API `fetch` nativa no rechaza la promesa en errores HTTP 4xx o 5xx, por lo que validar `response.ok` es imprescindible para activar el bloque `catch` ante fallos del servidor o recursos inexistentes.
+- **Alternativa descartada:** Invocar `fetch()` directamente dentro del `useEffect` de los componentes JSX y asumir que el bloque `catch` captura automáticamente cualquier error HTTP (ej. 404 Not Found).
 
-### 2. Transformación declarativa de datos con `.map()` e inmutabilidad
+### 2. Transformación Declarativa de Datos con `.map()` e Inmutabilidad
 
-- **Qué:** Renderizar la colección de tarjetas en JSX mediante el método declarativo `.map()`.
-- **Por qué:** El uso de `.map()` garantiza un código inmutable que genera elementos JSX limpios asignando la propiedad `key` obligatoria exigida por React para optimizar la reconciliación del árbol DOM visual.
-- **Alternativa descartada:** Utilizar bucles imperativos `for` clásicos o métodos con efectos secundarios (como `.forEach()`).
+- **Qué:** Renderizar la colección de tarjetas en JSX mediante el método declarativo `.map()`, asignando a cada nodo un atributo `key` único y estable.
+- **Por qué:** El uso de `.map()` garantiza inmutabilidad, devuelve directamente elementos JSX procesables por React y optimiza el algoritmo de reconciliación del Virtual DOM al proporcionar una clave única (`key={pokemon.id}`).
+- **Alternativa descartada:** Utilizar bucles imperativos `for` clásicos o métodos con efectos secundarios (como `.forEach()`), los cuales están prohibidos por convención en la asignatura y rompen el paradigma declarativo de React.
