@@ -1,4 +1,4 @@
-# ⚡ PokeAPI Odyssey · Misión 2
+# PokeAPI Odyssey · Misión 2
 
 **Misión M2 · Async Odyssey** — Programación Web I (Cliente) · U-tad (2026–2027).
 
@@ -43,7 +43,7 @@ Inspección directa desde las **DevTools de Chrome** (pestañas *Network* y *Con
 
 ---
 
-## 🔬 Sección Obligatoria: Autopsia (Decisiones Técnicas)
+## Sección Obligatoria: Autopsia (Decisiones Técnicas)
 
 ### 1. Abstracción en Capa de Servicios (`pokemonService.js`) y Verificación Estricta de `response.ok`
 
