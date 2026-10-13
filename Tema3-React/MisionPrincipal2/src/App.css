@@ -1,4 +1,6 @@
 .app-container {
+  width: 100%;
+  box-sizing: border-box;
   max-width: 1000px;
   margin: 0 auto;
   padding: 2rem 1rem;
@@ -27,12 +29,12 @@
 
 .pokemon-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
 }
 
 .pokemon-card {
-  background: #ffffff;
+  background: var(--code-bg);
   border-radius: 12px;
   padding: 1.25rem 1rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -48,7 +50,7 @@
 
 .pokemon-id {
   font-size: 0.85rem;
-  color: #64748b;
+  color: var(--text);
   font-weight: 700;
   align-self: flex-end;
 }
@@ -64,7 +66,7 @@
   margin: 0.5rem 0 0;
   text-transform: capitalize;
   font-size: 1.1rem;
-  color: #1e293b;
+  color: var(--text-h);
 }
 
 .no-results {

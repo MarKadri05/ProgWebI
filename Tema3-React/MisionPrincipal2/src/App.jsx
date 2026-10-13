@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { getPokemonList } from './services/pokemonService';
+import { getPokemonList } from './services/PokemonService';
 import { PokemonGrid } from './components/PokemonGrid';
 import { StatusMessage } from './components/StatusMessage';
+import './App.css';
 
 export default function App() {
   const [pokemons, setPokemons] = useState([]);
