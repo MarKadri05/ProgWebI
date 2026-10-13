@@ -15,17 +15,17 @@ En el marco de la asignatura se permite el uso de herramientas de Inteligencia A
 
 ## Índice de Entregas Opcionales
 
-| Unidad | Misión / Temática | Estado | Enlace al código |
+| Unidad | Misión / Temática | Estado |
 | :---: | :--- | :---: | :--- |
-| **U1** | Misión 1: El oráculo de los números | 🟢 Completado | [Mision1.html](./Mision1.html) |
-| **U1** | Misión 2: *Pendiente por realizar* | 🔴 Pendiente | *Próximamente* |
-| **U1** | Misión 3: *Pendiente por realizar* | 🔴 Pendiente | *Próximamente* |
-| **U2** | JS Avanzado, Asincronía & Módulos ES | 🔴 Pendiente | *Próximamente* |
-| **U3** | React 19, Componentes & Estado | 🔴 Pendiente | *Próximamente* |
-| **U4** | Formularios (RHF, Zod) & TanStack Query | 🔴 Pendiente | *Próximamente* |
-| **U5** | Tailwind CSS v4 & Modos de Diseño | 🔴 Pendiente | *Próximamente* |
-| **U6** | Next.js 16 (App Router & Server Components) | 🔴 Pendiente | *Próximamente* |
-| **U7** | Testing con Vitest & React Testing Library | 🔴 Pendiente | *Próximamente* |
+| **U1** | Misión 1: El oráculo de los números | 🟢 Completado |
+| **U1** | Misión 2: *Pendiente por realizar* | 🟢 Completado |
+| **U1** | Misión 3: *Pendiente por realizar* | 🔴 Pendiente |
+| **U2** | JS Avanzado, Asincronía & Módulos ES | 🔴 Pendiente |
+| **U3** | React 19, Componentes & Estado | 🔴 Pendiente |
+| **U4** | Formularios (RHF, Zod) & TanStack Query | 🔴 Pendiente |
+| **U5** | Tailwind CSS v4 & Modos de Diseño | 🔴 Pendiente |
+| **U6** | Next.js 16 (App Router & Server Components) | 🔴 Pendiente |
+| **U7** | Testing con Vitest & React Testing Library | 🔴 Pendiente |
 
 ---
 
