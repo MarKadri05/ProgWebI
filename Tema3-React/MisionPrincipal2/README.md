@@ -31,7 +31,7 @@ De acuerdo con la **Regla de Oro** de la asignatura, la Inteligencia Artificial 
 ### Tareas Delegadas
 
 - Apoyo en la estructuración visual **CSS/Flexbox** para las tarjetas de Pokémon y el contenedor responsive.
-- Asistencia en la arquitectura de **Módulos ES** para separar la capa de servicios HTTP (`pokemonService.js`) de los componentes de interfaz en JSX.
+- Asistencia en la arquitectura de **Módulos ES** para separar la capa de servicios HTTP (`PokemonService.js`) de los componentes de interfaz en JSX.
 
 ### Prompts Reales Utilizados
 
@@ -45,7 +45,7 @@ Inspección directa desde las **DevTools de Chrome** (pestañas *Network* y *Con
 
 ## Sección Obligatoria: Autopsia (Decisiones Técnicas)
 
-### 1. Abstracción en Capa de Servicios (`pokemonService.js`) y Verificación Estricta de `response.ok`
+### 1. Abstracción en Capa de Servicios (`PokemonService.js`) y Verificación Estricta de `response.ok`
 
 - **Qué:** Se extrae toda la lógica de red y peticiones HTTP a un módulo JavaScript puro (`src/services/PokemonService.js`), evaluando explícitamente `if (!response.ok)` y lanzando un `Error` manual antes de procesar el JSON.
 - **Por qué:** Desacopla la lógica de infraestructura de la presentación en React, respetando el principio de responsabilidad única (SRP). Además, la API `fetch` nativa no rechaza la promesa en errores HTTP 4xx o 5xx, por lo que validar `response.ok` es imprescindible para activar el bloque `catch` ante fallos del servidor o recursos inexistentes.

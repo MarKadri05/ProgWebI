@@ -1,29 +1,36 @@
-// URL base de la PokeAPI solicitando los primeros 20 Pokémon
+// URL base de la PokeAPI
 const POKEAPI_URL = 'https://pokeapi.co/api/v2/pokemon?limit=20';
+// Clave para guardar en el almacenamiento local del navegador
+const CACHE_KEY = 'pokemon_list_cache';
 
 /**
- * Obtiene la lista inicial de Pokémon desde la PokeAPI.
- * @returns {Promise<Array<{id: number, name: string, image: string}>>} Array con datos limpios de cada Pokémon.
+ * Obtiene la lista de Pokémon desde localStorage (si existe) o desde la PokéAPI.
+ * @returns {Promise<Array<{id: number, name: string, image: string}>>}
  */
 export async function getPokemonList() {
-  // QUÉ HACE: Envolver la petición HTTP y el procesamiento en un bloque try...catch.
-  // POR QUÉ: Capturar tanto fallos de red como excepciones lanzadas por status HTTP de error.
-  // QUÉ ALTERNATIVA SE DESCARTÓ: Usar promesas tradicionales con .then().catch(), descartado porque async/await ofrece una sintaxis secuencial y más legible.
+  // QUÉ: Comprobar primero la existencia de datos en la caché de localStorage.
+  // POR QUÉ: Evita peticiones de red repetidas e innecesarias a la API pública, optimizando el tiempo de carga e implementando la persistencia exigida en el BONUS.
+  // QUÉ ALTERNATIVA SE DESCARTÓ: Guardar los datos únicamente en la memoria de un estado de React, descartado porque se perderían al recargar la página (F5).
+  try {
+    const cachedData = localStorage.getItem(CACHE_KEY);
+    if (cachedData) {
+      return JSON.parse(cachedData);
+    }
+  } catch (cacheError) {
+    // Si localStorage falla o el JSON está corrupto, continuamos de forma transparente con el fetch
+  }
+
+  // Si no había caché, realizamos la llamada asíncrona normal
   try {
     const response = await fetch(POKEAPI_URL);
 
-    // QUÉ HACE: Verificación explícita de la propiedad response.ok.
-    // POR QUÉ: fetch() NO rechaza la promesa ante códigos de error HTTP 404 o 500 (solo por fallos de red a nivel de socket), por lo que debemos validar response.ok e interrumplir el flujo manualmente.
-    // QUÉ ALTERNATIVA SE DESCARTÓ: Asumir que la petición fue exitosa tras el fetch(), descartado porque devolvería datos corruptos si la API devuelve un error HTTP.
     if (!response.ok) {
-      throw new Error(`Error HTTP en la llamada a la PokeAPI: ${response.status} ${response.statusText}`);
+      throw new Error(`Error HTTP en la PokeAPI: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
 
-    // QUÉ HACE: Mapear la lista de resultados para obtener los detalles de cada Pokémon mediante peticiones simultáneas con Promise.all().
-    // POR QUÉ: Los resultados generales solo devuelven name y url. Promise.all() permite realizar las 20 peticiones concurrentes en paralelo en lugar de hacerlas secuencialmente (lo que ralentizaría la app).
-    // QUÉ ALTERNATIVA SE DESCARTÓ: Usar bucles tradicionales 'for' o '.forEach()', descartado por la prohibición explícita de "Cero bucles" de las reglas de clase y porque .map() mantiene un enfoque puramente funcional e inmutable.
+    // Obtener detalles completos de cada Pokémon en paralelo
     const pokemonDetails = await Promise.all(
       data.results.map(async (pokemon) => {
         const detailResponse = await fetch(pokemon.url);
@@ -31,7 +38,7 @@ export async function getPokemonList() {
           throw new Error(`Error al obtener detalles de ${pokemon.name}`);
         }
         const detailData = await detailResponse.json();
-        
+
         return {
           id: detailData.id,
           name: detailData.name,
@@ -40,13 +47,17 @@ export async function getPokemonList() {
       })
     );
 
-    return pokemonDetails;
+    // QUÉ: Serializar y guardar el array procesado en localStorage.
+    // POR QUÉ: localStorage solo almacena strings, por lo que es obligatorio usar JSON.stringify().
+    // QUÉ ALTERNATIVA SE DESCARTÓ: Almacenar directamente el objeto sin serializar, descartado porque guardaría "[object Object]".
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify(pokemonDetails));
+    } catch (saveError) {
+      // Si la cuota de localStorage se excede, simplemente no se guarda la caché
+    }
 
+    return pokemonDetails;
   } catch (error) {
-    // QUÉ HACE: Relanzar la excepción tras registrarla en consola.
-    // POR QUÉ: Permitir que la capa superior de UI (React / App.jsx) capture el fallo y active el estado visual de Error para el usuario.
-    // QUÉ ALTERNATIVA SE DESCARTÓ: Capturar el error y devolver un array vacío silenciosamente, descartado porque impediría a la interfaz notificar al usuario sobre la falla de red.
-    console.error('Error en pokemonService.getPokemonList:', error.message);
     throw error;
   }
 }
