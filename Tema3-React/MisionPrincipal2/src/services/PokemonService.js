@@ -17,10 +17,10 @@ export async function getPokemonList() {
       return JSON.parse(cachedData);
     }
   } catch (cacheError) {
-    // Si localStorage falla o el JSON está corrupto, continuamos de forma transparente con el fetch
+    // Si localStorage falla o el JSON está corrupto, continua de forma transparente con el fetch
   }
 
-  // Si no había caché, realizamos la llamada asíncrona normal
+  // Si no había caché, se realiza la llamada asíncrona normal
   try {
     const response = await fetch(POKEAPI_URL);
 

@@ -1,12 +1,12 @@
 # ⚡ PokeAPI Odyssey · Misión 2
 
-**Misión M2 · Async Odyssey** — Programación Web I (Cliente) · U-tad (2026–2027).
+**Misión M2 · Async Odyssey**.
 
 Aplicación web interactiva desarrollada con **Vite + React (JSX)** para consumir y visualizar datos de la **PokeAPI** mediante peticiones HTTP asíncronas (`fetch` con `async/await`), control de excepciones con `try...catch`, comprobación explícita de `response.ok` y gestión declarativa de estados visuales de la UI (**Carga**, **Datos** y **Error**).
 
 ---
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 - Listado de los primeros 20 Pokémon con su número (`#001`), sprite y nombre, en una cuadrícula de 3 columnas.
 - Buscador reactivo por nombre, filtrado en tiempo real sobre los datos ya cargados.
@@ -35,7 +35,7 @@ Aplicación web interactiva desarrollada con **Vite + React (JSX)** para consumi
 
 ---
 
-## 🤖 Sección Obligatoria: Uso de IA
+## 🤖 Uso de IA
 
 De acuerdo con la **Regla de Oro** de la asignatura, la Inteligencia Artificial se utiliza como un colaborador de desarrollo, asegurando la capacidad de defender y explicar cada línea de código escrita.
 
@@ -49,7 +49,7 @@ De acuerdo con la **Regla de Oro** de la asignatura, la Inteligencia Artificial 
 
 > *"Actúa como mi compañero de programación y evaluador para la Misión 2 (M2 · Async Odyssey) de la asignatura Programación Web I (Cliente). Lee el archivo GEMINI.md en la raíz del repositorio para conocer las normas globales de clase, las convenciones de la asignatura y la rúbrica. Voy a construir mi aplicación web con Vite + React (JSX) consumiendo la API pública PokeAPI..."*
 
-> *"¿Cómo puedo implementar en React un buscador que filtre las tarjetas en tiempo real a medida que el usuario escribe en un input, sin tener que volver a hacer peticiones a la red?"*
+> *"Cómo puedo implementar en React un buscador que filtre las tarjetas en tiempo real a medida que el usuario escribe en un input sin tener que volver a hacer peticiones a la red?"*
 
 ### Método de Verificación
 
@@ -61,7 +61,7 @@ Inspección directa desde las **DevTools de Chrome** (pestañas *Network*, *Cons
 
 ---
 
-## 🔬 Sección Obligatoria: Autopsia (Decisiones Técnicas)
+## Autopsia (Decisiones Técnicas)
 
 ### 1. Abstracción en Capa de Servicios (`PokemonService.js`) y Verificación Estricta de `response.ok`
 
