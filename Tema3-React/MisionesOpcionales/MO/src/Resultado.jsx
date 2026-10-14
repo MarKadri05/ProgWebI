@@ -10,12 +10,12 @@ export function Resultado({ puntos, total, onReiniciar }) {
   }
 
   return (
-    <div className="resultado-container">
+    <div className="resultado-card">
       <h2>Pantalla Final</h2>
       <p>Has obtenido <strong>{puntos}</strong> de <strong>{total}</strong> aciertos ({porcentaje}%).</p>
       <p className="mensaje-feedback">{mensaje}</p>
 
-      <button className="btn-reiniciar" onClick={onReiniciar}>
+      <button className="btn-siguiente" style={{ marginTop: '1.5rem' }} onClick={onReiniciar}>
         Jugar otra vez
       </button>
     </div>
