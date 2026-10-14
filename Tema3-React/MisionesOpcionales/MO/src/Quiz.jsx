@@ -1,17 +1,17 @@
 import { useState } from 'react';
-import { PREGUNTAS } from '../misiones/quiz/preguntas';
+import { PREGUNTAS } from './Preguntas';
 import { Resultado } from './Resultado';
+import './Quiz.css';
 
 export function Quiz() {
   const [indice, setIndice] = useState(0);
   const [puntos, setPuntos] = useState(0);
-  const [seleccion, setSeleccion] = useState(null); // Guarda el índice pulsado
+  const [seleccion, setSeleccion] = useState(null);
 
   const preguntaActual = PREGUNTAS[indice];
   const esFinDeJuego = indice >= PREGUNTAS.length;
 
   const manejarRespuesta = (indiceOpcion) => {
-    // Evita múltiples clics durante el feedback
     if (seleccion !== null) return;
 
     setSeleccion(indiceOpcion);
@@ -21,7 +21,6 @@ export function Quiz() {
       setPuntos((prev) => prev + 1);
     }
 
-    // Espera 1 segundo para mostrar el feedback visual antes de pasar de pregunta
     setTimeout(() => {
       setSeleccion(null);
       setIndice((prev) => prev + 1);
@@ -34,7 +33,6 @@ export function Quiz() {
     setSeleccion(null);
   };
 
-  // Renderizado condicional: Pantalla Final
   if (esFinDeJuego) {
     return (
       <Resultado
@@ -45,7 +43,6 @@ export function Quiz() {
     );
   }
 
-  // Renderizado de la pregunta actual
   return (
     <div className="quiz-container">
       <h2>Pregunta {indice + 1} de {PREGUNTAS.length}</h2>
@@ -53,13 +50,12 @@ export function Quiz() {
 
       <div className="opciones-grid">
         {preguntaActual.opciones.map((opcion, i) => {
-          // Determina la clase CSS durante la selección
           let claseBoton = "btn-opcion";
           if (seleccion !== null) {
             if (i === preguntaActual.correcta) {
-              claseBoton += " correcta"; // Verde
+              claseBoton += " correcta";
             } else if (i === seleccion) {
-              claseBoton += " incorrecta"; // Rojo
+              claseBoton += " incorrecta";
             }
           }
 
