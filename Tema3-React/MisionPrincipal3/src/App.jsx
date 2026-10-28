@@ -1,54 +1,55 @@
 import { useState, useEffect } from 'react';
-import { getZombieList } from './services/zombieService';
+import { getGwentCards } from './services/gwentService';
 
 export default function App() {
-  // 1. Tríada de estados para la gestión asíncrona en React
-  const [zombies, setZombies] = useState([]);
+  const [cards, setCards] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 2. Hook useEffect para ejecutar la petición de datos al montar el componente
   useEffect(() => {
-    // QUÉ: Declarar una función asíncrona dentro del efecto y ejecutarla.
-    // POR QUÉ: La función callback de useEffect NO puede ser declarada 'async' directamente porque debe devolver undefined o una función de limpieza.
-    // QUÉ ALTERNATIVA SE DESCARTÓ: useEffect(async () => ...), descartado porque rompe el ciclo interno de React al devolver una Promesa.
-    const fetchZombies = async () => {
+    const fetchCards = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        const data = await getZombieList();
-        setZombies(data);
+        const data = await getGwentCards();
+        setCards(data);
       } catch (err) {
-        setError(err.message || 'Error al conectar con la base de datos de infectados');
+        setError(err.message || 'Error al conectar con el registro de Gwent');
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchZombies();
-  }, []); // Array de dependencias vacío = solo se ejecuta una vez al montar el componente
+    fetchCards();
+  }, []);
 
-  // 3. Renderizado condicional declarativo
   return (
-    <main style={{ padding: '2rem', fontFamily: 'system-ui, sans-serif' }}>
-      <h1>🧟 Zombie Codex · Registro de Infectados</h1>
+    <main style={{ padding: '2rem', backgroundColor: '#121212', minHeight: '100vh', color: '#f1e8d9', fontFamily: 'Georgia, serif' }}>
+      <h1 style={{ color: '#d4af37', textAlign: 'center' }}>⚔️ Gwent Codex · El Grimorio de Geralt</h1>
 
-      {isLoading && <p>⏳ Cargando datos de infectados...</p>}
+      {isLoading && <p style={{ textAlign: 'center', color: '#d4af37' }}>📜 Repartiendo cartas de la baraja...</p>}
 
       {!isLoading && error && (
-        <div style={{ color: 'red', border: '1px solid red', padding: '1rem', borderRadius: '8px' }}>
-          <p>⚠️ Ocurrió un error: {error}</p>
+        <div style={{ color: '#ff6b6b', border: '1px solid #ff6b6b', padding: '1rem', borderRadius: '8px', backgroundColor: '#2a0000', textAlign: 'center' }}>
+          <p>⚠️ Alerta de Taberna: {error}</p>
         </div>
       )}
 
       {!isLoading && !error && (
-        <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem', marginTop: '1.5rem' }}>
-          {zombies.map((zombie) => (
-            <article key={zombie.id} style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '1rem', textAlign: 'center' }}>
-              <img src={zombie.image} alt={zombie.name} style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '4px' }} />
-              <h3>{zombie.name}</h3>
-              <p>⭐ Rating: {zombie.rating}</p>
+        <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.5rem', marginTop: '2rem' }}>
+          {cards.map((card) => (
+            <article key={card.id} style={{ border: '2px solid #d4af37', borderRadius: '8px', padding: '1rem', textAlign: 'center', backgroundColor: '#1c1c1c', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <img 
+                  src={card.image} 
+                  alt={card.name} 
+                  style={{ width: '100%', height: '240px', objectFit: 'cover', borderRadius: '4px' }} 
+                />
+                <h3 style={{ color: '#fff', fontSize: '1.1rem', margin: '0.8rem 0 0.4rem 0' }}>{card.name}</h3>
+                <p style={{ margin: '0.2rem 0', color: '#aaa', fontSize: '0.9rem' }}>Fila: {card.position}</p>
+              </div>
+              <p style={{ margin: '0.5rem 0 0 0', color: '#ff4500', fontWeight: 'bold', fontSize: '1.1rem' }}>⚔️ Fuerza: {card.power}</p>
             </article>
           ))}
         </section>
