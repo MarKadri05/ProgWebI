@@ -1,9 +1,9 @@
-import { GwentCard } from './gwentCard';
+import { GwentCard } from './GwentCard';
 
 /**
- * Renderiza la rejilla de cartas mediante .map() declarativo.
+ * Renderiza la rejilla de cartas mediante .map() declarativo o un mensaje si no hay coincidencias.
  */
-export function GwentGrid({ cards, formatPositionLabel }) {
+export function GwentGrid({ cards, formatPositionLabel, onCardSelect }) {
   if (cards.length === 0) {
     return (
       <p style={{ textAlign: 'center', color: '#aaa', marginTop: '3rem' }}>
@@ -22,6 +22,7 @@ export function GwentGrid({ cards, formatPositionLabel }) {
           position={card.position}
           power={card.power}
           formatPositionLabel={formatPositionLabel}
+          onClick={() => onCardSelect(card)}
         />
       ))}
     </section>

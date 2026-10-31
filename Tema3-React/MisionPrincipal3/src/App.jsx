@@ -3,11 +3,14 @@ import { getGwentCards } from './services/gwentService';
 import { FilterPanel } from './components/FilterPanel';
 import { GwentGrid } from './components/GwentGrid';
 import { StatusMessage } from './components/StatusMessage';
+import { GwentModal } from './components/GwentModal';
 
 export default function App() {
   const [cards, setCards] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [selectedCard, setSelectedCard] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPosition, setSelectedPosition] = useState('All');
@@ -82,9 +85,18 @@ export default function App() {
             sortBy={sortBy}
             setSortBy={setSortBy}
           />
-          <GwentGrid cards={sortedCards} formatPositionLabel={formatPositionLabel} />
+          <GwentGrid 
+            cards={sortedCards} 
+            formatPositionLabel={formatPositionLabel} 
+            onCardSelect={(card) => setSelectedCard(card)}
+          />
         </>
       )}
+
+      <GwentModal 
+        card={selectedCard} 
+        onClose={() => setSelectedCard(null)} 
+      />
     </main>
   );
 }

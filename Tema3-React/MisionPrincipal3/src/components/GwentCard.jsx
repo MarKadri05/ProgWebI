@@ -1,9 +1,23 @@
 /**
  * Renderiza la ficha visual de una carta individual de Gwent.
  */
-export function GwentCard({ name, image, position, power, formatPositionLabel }) {
+export function GwentCard({ name, image, position, power, formatPositionLabel, onClick }) {
   return (
-    <article style={{ border: '2px solid #d4af37', borderRadius: '8px', padding: '1rem', textAlign: 'center', backgroundColor: '#1c1c1c', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+    <article 
+      onClick={onClick}
+      style={{ 
+        border: '2px solid #d4af37', 
+        borderRadius: '8px', 
+        padding: '1rem', 
+        textAlign: 'center', 
+        backgroundColor: '#1c1c1c', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        justifyContent: 'space-between',
+        cursor: 'pointer',
+        transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+      }}
+    >
       <div>
         <img 
           src={image} 
