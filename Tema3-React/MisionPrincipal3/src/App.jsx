@@ -1,38 +1,18 @@
-import { useState, useEffect } from 'react';
-import { getGwentCards } from './services/gwentService';
+import { useState } from 'react';
+import { useGwentCards } from './hooks/useGwentCards';
 import { FilterPanel } from './components/FilterPanel';
 import { GwentGrid } from './components/GwentGrid';
 import { StatusMessage } from './components/StatusMessage';
 import { GwentModal } from './components/GwentModal';
 
 export default function App() {
-  const [cards, setCards] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Consumo mediante el Custom Hook (Bonus M3)
+  const { cards, isLoading, error } = useGwentCards();
 
   const [selectedCard, setSelectedCard] = useState(null);
-
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPosition, setSelectedPosition] = useState('All');
   const [sortBy, setSortBy] = useState('default');
-
-  useEffect(() => {
-    const fetchCards = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const data = await getGwentCards();
-        setCards(data);
-      } catch (err) {
-        setError(err.message || 'Error connecting to the Gwent database');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchCards();
-  }, []);
 
   const positionMapping = {
     'All': 'All',

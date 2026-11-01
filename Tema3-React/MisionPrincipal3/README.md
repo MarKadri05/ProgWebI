@@ -86,3 +86,9 @@ De acuerdo con la Regla de Oro de la asignatura, la Inteligencia Artificial se u
 - **Qué:** Implementar el estado `selectedCard` en `App.jsx`, que se actualiza al hacer clic en una tarjeta y desacopla la presentación de la cita narrativa (*flavor text*) en el componente `GwentModal`.
 - **Por qué:** Permite ampliar la ilustración y consultar el texto narrativo en cursiva o mostrar un mensaje por defecto si la carta carece de cita, proporcionando retroalimentación visual directa al usuario.
 - **Alternativa descartada:** Navegar a una nueva ruta de página o forzar la recarga de datos de red al seleccionar una carta.
+
+### 7. Extracción de Custom Hook reutilizable (`useGwentCards`) [Bonus]
+
+- **Qué:** Encapsular la lógica de suscripción asíncrona, gestión de promesas y los estados `cards`, `isLoading` y `error` dentro de un Custom Hook desacoplado en `src/hooks/useGwentCards.js`.
+- **Por qué:** Desconecta a `App.jsx` de los detalles de implementación de `useEffect` e `isMounted`, permitiendo reutilizar la lógica de carga en cualquier otro componente de la aplicación y cumpliendo con el reto BONUS de la rúbrica de la Misión 3.
+- **Alternativa descartada:** Mantener el `useEffect` y las llamadas asíncronas embebidas dentro de `App.jsx`.
