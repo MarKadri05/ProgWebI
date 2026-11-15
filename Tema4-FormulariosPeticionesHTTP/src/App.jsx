@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { HackathonForm } from './MisionesOpcionales/MO1/FormularioHackathon';
 import { CreateCardForm } from './MisionPrincipal4/components/CreateCardForm';
+import { CardList } from './MisionPrincipal4/components/CardList';
+import { createCard } from './MisionPrincipal4/services/CardService';
 
 export default function App() {
   // QUÉ: Estado local para alternar entre las distintas misiones del Tema 4.
@@ -8,14 +11,30 @@ export default function App() {
   // QUÉ ALTERNATIVA SE DESCARTÓ: Crear múltiples archivos main.jsx o configurar rutas complejas con React Router innecesarias para dos vistas.
   const [misionActiva, setMisionActiva] = useState('m4');
 
-  // Prueba temporal antes de conectar TanStack Query en las Fases 3 y 4
-  const handleTestSubmit = (data, resetForm) => {
-    console.log('Carta válida lista para enviar a la API:', data);
-    alert(`Carta "${data.name}" validada con éxito`);
-    resetForm();
+  const queryClient = useQueryClient();
+
+  // QUÉ: Mutación declarativa con TanStack Query v5 para enviar nuevas cartas mediante POST.
+  // POR QUÉ: Gestiona automáticamente los estados isPending, isSuccess e isError e invalida la caché ['mtg-cards'] al completarse.
+  // QUÉ ALTERNATIVA SE DESCARTÓ: Ejecutar fetch() manualmente dentro de onSubmit y duplicar estados de carga/error con useState.
+  const createCardMutation = useMutation({
+    mutationFn: createCard,
+    onSuccess: () => {
+      // Invalida todas las queries cuya clave comience por 'mtg-cards' para refrescar el listado automáticamente
+      queryClient.invalidateQueries({ queryKey: ['mtg-cards'] });
+    },
+  });
+
+  // QUÉ: Función puente que ejecuta la mutación y limpia el formulario únicamente si el servidor responde con éxito.
+  // POR QUÉ: Evita borrar los datos escritos por el usuario si ocurre un fallo de red durante el envío.
+  const handleCreateCard = (validData, resetForm) => {
+    createCardMutation.mutate(validData, {
+      onSuccess: () => {
+        resetForm();
+      },
+    });
   };
 
-  // Fondo con ilustración de Magic y capa oscura para mantener la legibilidad del formulario
+  // Fondo con ilustración de Magic y capa oscura para mantener la legibilidad
   const appBackgroundStyle = {
     minHeight: '100vh',
     color: '#f1e8d9',
@@ -74,7 +93,16 @@ export default function App() {
         {misionActiva === 'hackathon' && <HackathonForm />}
 
         {misionActiva === 'm4' && (
-          <CreateCardForm onSubmitCard={handleTestSubmit} isPending={false} />
+          <>
+            <CreateCardForm
+              onSubmitCard={handleCreateCard}
+              isPending={createCardMutation.isPending}
+              isSuccess={createCardMutation.isSuccess}
+              isError={createCardMutation.isError}
+              errorMessage={createCardMutation.error?.message}
+            />
+            <CardList />
+          </>
         )}
       </main>
     </div>

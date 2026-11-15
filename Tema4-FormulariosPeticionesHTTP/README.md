@@ -1,12 +1,21 @@
-# Magic Deck Builder · Misión 4 (Full Contact Forms)
+# Magic: The Gathering · Deck Builder (Misión 4)
 
-Misión M4 · Programación Web I (Cliente) — Grado en Ingeniería del Software (U-tad 2026–2027).
+### Misión M4 · Form & Query — Programación Web I (Cliente) · U-tad (2026–2027)
 
-Aplicación web interactiva desarrollada con **Vite + React 19 (JSX)** que implementa un creador de cartas personalizadas para el universo de *Magic: The Gathering*. Integra validación declarativa en cliente y arquitectura preparada para la gestión asíncrona de estado remoto utilizando **React Hook Form**, **Zod** y **TanStack Query v5**.
+Aplicación web interactiva desarrollada con **Vite + React 19 (JSX)** para la creación, validación estricta y consulta asíncrona de un mazo personalizado de cartas de *Magic: The Gathering*. El proyecto integra **React Hook Form** para la gestión eficiente de formularios no controlados, **Zod** como única fuente de verdad para el tipado y reglas cruzadas de negocio, y **TanStack Query v5** para la sincronización de caché y mutaciones contra un backend REST en **MockAPI.io**.
 
 ---
 
-## Instrucciones de Ejecución
+## Funcionalidades Implementadas
+
+- **Formulario no controlado (`CreateCardForm`):** Registro de cartas con validación reactiva mediante `zodResolver`, atributos de accesibilidad (`htmlFor`, `aria-invalid`, `aria-describedby`, `role="alert"`) y desactivación de globos nativos del navegador (`noValidate`).
+- **Adaptación dinámica por tipo de carta:** Renderizado condicional de estadísticas numéricas según el tipo seleccionado (`Fuerza` y `Vida` para *Creature*, `Lealtad Inicial` para *Planeswalker*, y ocultación automática en hechizos, encantamientos y artefactos), además de textos de ejemplo (*placeholders*) contextuales en la descripción.
+- **Sincronización remota con TanStack Query:** Consulta declarativa mediante `useQuery` y envío con `useMutation`, invalidando automáticamente la clave de caché `['mtg-cards']` tras cada alta para refrescar el grimorio sin recargar la página.
+- **Validación defensiva de respuestas (`safeParse` · BONUS):** Verificación estructural de los datos recibidos desde la API mediante `apiCardsListSchema.safeParse()`, incluyendo un botón de prueba en la interfaz para simular un registro corrupto procedente del servidor e interceptar el fallo con precisión.
+
+---
+
+## Ejecución y Prueba Local
 
 1. Instalar las dependencias del proyecto (incluyendo las librerías de formularios, esquemas y caché):
 
@@ -14,68 +23,86 @@ Aplicación web interactiva desarrollada con **Vite + React 19 (JSX)** que imple
    npm install
    ```
 
-2. Ejecutar el servidor de desarrollo local de Vite:
+2. [COMPLETAR: indicar cómo se configura el endpoint de MockAPI, por ejemplo la URL fija en `cardService.js` o la variable de entorno en `.env`.]
+
+3. Ejecutar el servidor de desarrollo de Vite:
 
    ```bash
    npm run dev
    ```
 
-3. Abrir la aplicación en el navegador (por defecto en `http://localhost:5173/`).
+4. Abrir en el navegador la URL local indicada por Vite (por ejemplo: `http://localhost:5173/`).
 
-4. Utilizar la barra superior de navegación para seleccionar **Misión 4: Deck Builder**.
+5. Utilizar la barra superior de navegación para seleccionar **Misión 4: Deck Builder**.
 
 ---
 
 ## Uso de IA
 
-> *De acuerdo con la Regla de Oro de la asignatura, la Inteligencia Artificial se utiliza como un colaborador de desarrollo, asegurando la capacidad de defender y explicar cada línea de código escrita.*
+*De acuerdo con la Regla de Oro de la asignatura, la Inteligencia Artificial se utiliza como un colaborador de desarrollo, asegurando la capacidad de defender y explicar cada línea de código escrita.*
 
 ### Tareas delegadas
 
 - Estructuración por fases del proyecto para integrar React Hook Form, Zod y TanStack Query v5 dentro de una arquitectura modular.
 - Configuración del proveedor global `QueryClientProvider` en el punto de entrada (`src/main.jsx`) y diseño del selector condicional de misiones en `src/App.jsx`.
-- Asistencia en la definición del esquema de validación con Zod (`cardSchema.js`), incluyendo coerción numérica y reglas cruzadas entre campos mediante `.refine()`.
-- Ajustes de maquetación CSS (`box-sizing: border-box`, simetría de controles y contraste sobre imagen de fondo) y atributos de accesibilidad ARIA.
+- Apoyo en la maquetación visual en CSS (estética oscura con bordes dorados, distribución en rejilla `CSS Grid`, `box-sizing: border-box` y simetría de alturas en los controles del formulario).
+- Asistencia en la configuración de reglas cruzadas de Zod mediante `.superRefine()` para validar dependencias entre el tipo de carta y sus estadísticas (`power`, `health` y `loyalty`).
+- Estructuración de la prueba controlada de integridad de datos mediante `safeParse()` para el reto opcional de la misión.
 
 ### Prompts reales utilizados
 
 > *"¿Cómo se integra `zodResolver` dentro de la configuración inicial de `useForm` para que Zod actúe como única fuente de verdad sin depender de las reglas nativas de HTML5?"*
 
-> *"¿Cómo se define una validación cruzada en Zod con `.refine()` para impedir que cartas que no sean de tipo `Creature` tengan fuerza mayor que 0 y mostrar el error debajo del campo correspondiente?"*
+> *"¿Cómo se pueden ocultar dinámicamente los campos de fuerza (ataque) y vida en el formulario cuando el tipo de carta seleccionado no sea una criatura, manteniendo la validación sincronizada en React Hook Form y Zod?"*
+
+> *"¿Cómo se implementa la validación defensiva con `safeParse` de Zod sobre la respuesta GET de MockAPI dentro de TanStack Query para detectar datos corruptos sin que la aplicación se rompa?"*
 
 ### Método de verificación
 
-- **Pruebas de validación en navegador:** Envío del formulario vacío y con valores fuera de rango (coste de maná mayor que 16, fuerza mayor que 20 o textos cortos) para comprobar que `handleSubmit` bloquea el envío y despliega los mensajes personalizados de Zod.
-- **Verificación de reglas cruzadas:** Cambio dinámico del selector *Tipo de Carta* a `Instant` o `Sorcery` manteniendo una fuerza superior a `0`, verificando que el error se activa al instante gracias a `deps: ['power']` y desaparece al volver a seleccionar `Creature`.
-- **Auditoría de accesibilidad (DevTools):** Inspección del árbol DOM para confirmar que `noValidate` desactiva las burbujas nativas del navegador y que los mensajes de error se vinculan mediante `aria-invalid`, `aria-describedby` y `role="alert"`.
+- **Validación de formulario y reglas cruzadas:** Prueba de envíos con campos vacíos, textos por debajo del mínimo de caracteres y valores fuera de rango, verificando que `handleSubmit` bloquea la petición HTTP y muestra los mensajes de error asociados a cada campo.
+- **Inspección de red y caché:** Revisión en las **DevTools de Chrome** (pestaña *Network*) comprobando el envío `POST` al crear cartas de distintos tipos (*Creature*, *Sorcery*, *Artifact*, *Planeswalker*) y la revalidación automática del `GET` mediante `invalidateQueries`.
+- **Simulación de contrato roto (`safeParse`):** Activación del botón *"Simular Dato Corrupto"* para confirmar que Zod captura la anomalía en el campo exacto (`"2.power" -> La fuerza máxima permitida es 20`) y muestra el estado de alerta sin bloquear la interfaz.
+- **Accesibilidad:** Navegación secuencial completa a través de todos los controles del formulario utilizando exclusivamente la tecla `Tab`, e inspección del árbol DOM para confirmar que `noValidate` desactiva las burbujas nativas y que los errores se vinculan mediante `aria-invalid`, `aria-describedby` y `role="alert"`.
 
 ---
 
 ## Autopsia (Decisiones Técnicas)
 
-### 1. Formulario no controlado (React Hook Form) frente a controlado (`useState`)
+### 1. Formulario no controlado con React Hook Form (`zodResolver`) frente a estado controlado con `useState`
 
-- **Decisión:** Implementar inputs no controlados mediante `register` y `handleSubmit` en `CreateCardForm.jsx`.
-- **Alternativa descartada:** Vincular cada campo a un estado local independiente con `useState` y actualizarlo en cada evento `onChange`.
-- **Justificación:** Los formularios controlados provocan un ciclo de renderizado completo del componente por cada pulsación de tecla. Al delegar el registro en React Hook Form, las referencias de los nodos DOM gestionan los valores internamente, evitando re-renderizados innecesarios y simplificando el código del componente.
+- **Qué:** Se gestiona el formulario mediante `useForm` registrando los campos por referencia (`register`) y delegando las reglas de negocio al esquema externo `cardSchema` a través de `zodResolver`.
+- **Por qué:** Evita provocar un re-renderizado completo del componente en cada pulsación de tecla y centraliza todas las validaciones y coerciones de tipo (`z.coerce.number()`) en una única fuente de verdad reutilizable.
+- **Alternativa descartada:** Controlar cada input individualmente mediante múltiples estados `useState` y validar manualmente con condicionales dentro del evento `onSubmit`.
 
-### 2. Zod como única fuente de verdad con `.refine()` frente a validación nativa HTML5
+### 2. Observación selectiva con `watch()` y saneamiento de valores al desmontar inputs condicionales
 
-- **Decisión:** Centralizar todas las reglas de validación en `src/MisionPrincipal4/schemas/cardSchema.js` utilizando Zod, conectarlo mediante `zodResolver` y desactivar la validación nativa del navegador con `noValidate`.
-- **Alternativa descartada:** Utilizar atributos HTML5 (`required`, `min`, `max`) o condicionales `if/else` manuales dentro de la función de envío.
-- **Justificación:** La validación nativa varía visualmente según el navegador y no soporta reglas complejas entre múltiples campos. El esquema Zod garantiza una única fuente de verdad reutilizable, realiza coerción segura de tipos (`z.coerce.number()`) sobre las cadenas recibidas de los inputs y permite validar dependencias entre campos (como exigir `type === 'Creature'` cuando `power > 0`).
+- **Qué:** Se suscribe la vista únicamente al campo `type` mediante `watch('type')` para mostrar u ocultar los campos de combate (`power`/`health`) o `loyalty`, acompañándolo de un manejador `handleCardTypeChange` que reinicia a `0` las estadísticas ocultas mediante `setValue`.
+- **Por qué:** React Hook Form conserva en memoria los valores registrados aunque sus elementos `<input>` dejen de renderizarse en el DOM; restablecerlos a `0` al cambiar de tipo evita que queden valores residuales que disparen errores ocultos en la validación cruzada `.superRefine()`.
+- **Alternativa descartada:** Duplicar el tipo de carta en un estado local auxiliar (`useState`) que podría desincronizarse al ejecutar `reset()` tras guardar una carta.
 
-### 3. Accesibilidad semántica (`role="alert"` y `aria-describedby`) frente a mensajes visuales simples
+### 3. Gestión de estado asíncrono e invalidación de caché con TanStack Query v5
 
-- **Decisión:** Asociar cada campo inválido con su mensaje de error mediante `aria-invalid`, `aria-describedby` y contenedores con `role="alert"`, manteniendo el botón de envío siempre pulsable cuando no hay una petición en curso.
+- **Qué:** Se encapsula la lectura del grimorio en `useQuery` con la clave `['mtg-cards', { simulateCorrupt }]` y el alta de nuevas cartas en `useMutation`, ejecutando `queryClient.invalidateQueries({ queryKey: ['mtg-cards'] })` en el callback `onSuccess`.
+- **Por qué:** Desacopla el estado del servidor del estado local de la interfaz, gestiona de forma declarativa los indicadores de carga/error (`isPending`, `isLoading`, `isError`) y garantiza que el listado refleje siempre la información real persistida en MockAPI tras cada inserción.
+- **Alternativa descartada:** Gestionar manualmente la petición `fetch` dentro de un `useEffect` acompañado de estados booleanos propios y añadir la nueva carta localmente con `.push()` sin confirmar su persistencia remota.
+
+### 4. Validación defensiva del contrato de API mediante `safeParse()` (reto bonus)
+
+- **Qué:** En `cardService.js` se valida el arreglo devuelto por `response.json()` contra `apiCardsListSchema.safeParse()` antes de entregar los datos a `useQuery`.
+- **Por qué:** A diferencia de `.parse()`, `safeParse()` no lanza una excepción no controlada, sino que devuelve un objeto discriminado `{ success, data, error }` que permite extraer la ruta exacta del campo corrupto (`firstIssue.path`) y presentar un mensaje de diagnóstico claro en la interfaz.
+- **Alternativa descartada:** Confiar ciegamente en la estructura del JSON recibido desde el servidor e inyectarlo directamente en el renderizado de tarjetas.
+
+### 5. Accesibilidad semántica (`role="alert"` y `aria-describedby`) frente a mensajes visuales simples
+
+- **Qué:** Asociar cada campo inválido con su mensaje de error mediante `aria-invalid`, `aria-describedby` y contenedores con `role="alert"`, manteniendo el botón de envío siempre pulsable cuando no hay una petición en curso.
+- **Por qué:** Un botón permanentemente deshabilitado impide recibir el foco mediante teclado y no informa al usuario de qué campo falla. Los atributos ARIA permiten que los lectores de pantalla anuncien automáticamente los errores de validación al intentar enviar el formulario.
 - **Alternativa descartada:** Mostrar textos de error en rojo sin atributos ARIA o deshabilitar el botón de envío mientras existan errores.
-- **Justificación:** Un botón permanentemente deshabilitado impide recibir el foco mediante teclado y no informa al usuario de qué campo falla. Los atributos ARIA permiten que los lectores de pantalla anuncien automáticamente los errores de validación al intentar enviar el formulario.
 
-### 4. Selector de misiones por estado (`useState`) frente a múltiples puntos de entrada
+### 6. Selector de misiones por estado (`useState`) frente a múltiples puntos de entrada
 
-- **Decisión:** Mantener un único punto de entrada (`src/main.jsx`) y alternar entre prácticas mediante renderizado condicional en `src/App.jsx`.
+- **Qué:** Mantener un único punto de entrada (`src/main.jsx`) y alternar entre prácticas mediante renderizado condicional en `src/App.jsx`.
+- **Por qué:** Vite resuelve la aplicación a partir de un único `index.html` raíz. El renderizado condicional mediante estado local mantiene un único árbol de dependencias y desmonta del DOM la vista inactiva sin sobrecargar el proyecto.
 - **Alternativa descartada:** Crear múltiples archivos `main.jsx` independientes o configurar un enrutador externo para dos vistas.
-- **Justificación:** Vite resuelve la aplicación a partir de un único `index.html` raíz. El renderizado condicional mediante estado local mantiene un único árbol de dependencias y desmonta del DOM la vista inactiva sin sobrecargar el proyecto.
 
 ---
 
