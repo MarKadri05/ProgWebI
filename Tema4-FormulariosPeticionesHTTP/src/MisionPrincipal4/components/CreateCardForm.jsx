@@ -2,18 +2,42 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cardSchema } from '../schemas/cardSchema';
 
+// Constante de módulo para adaptar el texto de ejemplo según el tipo de carta seleccionado
+const DESCRIPTION_PLACEHOLDERS = {
+  Creature: 'Ej. Vuela, prisa. Cuando esta criatura entra al campo de batalla, inflige 2 puntos de daño...',
+  Instant: 'Ej. Inflige 3 puntos de daño a cualquier objetivo o contrarresta el hechizo objetivo...',
+  Sorcery: 'Ej. Roba dos cartas y luego descarta una carta de tu mano...',
+  Enchantment: 'Ej. Las criaturas que controlas obtienen +1/+1 y tienen vigilancia...',
+  Artifact: 'Ej. {T}: Agrega un maná de cualquier color a tu reserva de maná...',
+  Planeswalker: 'Ej. +2: Roba una carta. -3: Destruye la criatura objetivo. -7: Obtienes un emblema...',
+};
+
 /**
  * Formulario no controlado para registrar nuevas cartas personalizadas de Magic: The Gathering.
- * @param {{ onSubmitCard: (data: Object, resetForm: Function) => void, isPending: boolean }} props
+ * @param {{
+ *   onSubmitCard: (data: Object, resetForm: Function) => void,
+ *   isPending: boolean,
+ *   isSuccess: boolean,
+ *   isError: boolean,
+ *   errorMessage?: string
+ * }} props
  */
-export function CreateCardForm({ onSubmitCard, isPending = false }) {
-  // QUÉ: Inicializamos React Hook Form conectándolo con nuestro esquema Zod mediante zodResolver.
-  // POR QUÉ: Delega la validación a una única fuente de verdad externa y evita re-renderizados por cada tecla pulsada.
-  // QUÉ ALTERNATIVA SE DESCARTÓ: Formularios controlados con useState por cada input, descartado por penalizar el rendimiento y duplicar lógica.
+export function CreateCardForm({
+  onSubmitCard,
+  isPending = false,
+  isSuccess = false,
+  isError = false,
+  errorMessage = '',
+}) {
+  // QUÉ: Inicialización de React Hook Form conectado a cardSchema mediante zodResolver.
+  // POR QUÉ: Delega la validación a una única fuente de verdad externa y evita re-renderizados por cada pulsación de tecla.
+  // QUÉ ALTERNATIVA SE DESCARTÓ: Formularios controlados con useState por cada campo, descartado por penalizar el rendimiento.
   const {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(cardSchema),
@@ -23,19 +47,52 @@ export function CreateCardForm({ onSubmitCard, isPending = false }) {
       type: 'Creature',
       manaCost: 3,
       power: 3,
-      ability: '',
-      imageUrl: 'https://cards.scryfall.io/art_crop/front/7/7/77c6fa74-5543-42ac-9ead-0e890b188e99.jpg',
+      health: 3,
+      loyalty: 0,
+      Abilityes: '',
+      imageURL: 'https://cards.scryfall.io/art_crop/front/7/7/77c6fa74-5543-42ac-9ead-0e890b188e99.jpg',
     },
   });
 
-  // QUÉ: Función intermedia que recibe los datos ya validados y limpios por Zod.
-  // POR QUÉ: handleSubmit solo ejecuta este callback si cardSchema tiene éxito; además pasamos reset() para limpiar el formulario tras guardar.
-  // QUÉ ALTERNATIVA SE DESCARTÓ: Validar manualmente con condicionales if/else dentro del evento onSubmit.
+  // QUÉ: Suscripción exclusiva al campo 'type' mediante watch().
+  // POR QUÉ: Permite renderizar condicionalmente Fuerza/Vida (Creature) o Lealtad (Planeswalker) y adaptar el placeholder sin duplicar estado con useState.
+  // QUÉ ALTERNATIVA SE DESCARTÓ: Crear estados locales extra [isCreature, setIsCreature] que podrían desincronizarse al hacer reset().
+  const selectedType = watch('type');
+  const isCreature = selectedType === 'Creature';
+  const isPlaneswalker = selectedType === 'Planeswalker';
+
+  // Extraemos el onChange nativo de register('type') para sincronizar estadísticas al cambiar el tipo
+  const { onChange: handleTypeFieldChange, ...typeRegisterProps } = register('type');
+
+  const handleCardTypeChange = (event) => {
+    handleTypeFieldChange(event);
+    const nextType = event.target.value;
+
+    // QUÉ: Ajustar power, health y loyalty según el tipo seleccionado.
+    // POR QUÉ: Al desmontar los inputs condicionales de la vista, RHF conserva los valores en memoria; inicializarlos evita errores ocultos de validación.
+    if (nextType === 'Creature') {
+      setValue('power', 3, { shouldValidate: true });
+      setValue('health', 3, { shouldValidate: true });
+      setValue('loyalty', 0, { shouldValidate: true });
+    } else if (nextType === 'Planeswalker') {
+      setValue('power', 0, { shouldValidate: true });
+      setValue('health', 0, { shouldValidate: true });
+      setValue('loyalty', 4, { shouldValidate: true });
+    } else {
+      setValue('power', 0, { shouldValidate: true });
+      setValue('health', 0, { shouldValidate: true });
+      setValue('loyalty', 0, { shouldValidate: true });
+    }
+  };
+
+  // QUÉ: Manejador intermedio que recibe únicamente datos ya validados y limpios por Zod.
+  // POR QUÉ: handleSubmit bloquea la ejecución si existe cualquier error y permite pasar reset() para limpiar tras guardar.
+  // QUÉ ALTERNATIVA SE DESCARTÓ: Validar manualmente con bloques if/else dentro del envío.
   const handleValidSubmit = (validData) => {
     onSubmitCard(validData, () => reset());
   };
 
-  // Estilo base con boxSizing: 'border-box' para que ningún campo sobresalga por la derecha
+  // Estilo base con boxSizing: 'border-box' para mantener simetría exacta en todos los bordes
   const baseFieldStyle = {
     width: '100%',
     boxSizing: 'border-box',
@@ -48,14 +105,14 @@ export function CreateCardForm({ onSubmitCard, isPending = false }) {
     fontSize: '0.88rem',
   };
 
-  // Padding solo horizontal ('0 0.65rem') + altura fija (42px) para evitar cortes verticales y mantener simetría
+  // Padding horizontal y altura fija (42px) para que inputs numéricos y desplegables coincidan
   const singleLineStyle = {
     ...baseFieldStyle,
     height: '42px',
     padding: '0 0.65rem',
   };
 
-  // Estilo específico para el área de texto de efectos/habilidades
+  // Estilo específico para el área de texto de descripción
   const textareaStyle = {
     ...baseFieldStyle,
     padding: '0.65rem',
@@ -93,13 +150,46 @@ export function CreateCardForm({ onSubmitCard, isPending = false }) {
         ✨ Forjar Nueva Carta de Magic
       </h2>
 
+      {/* Feedback accesible de éxito y error de la mutación */}
+      {isSuccess && (
+        <div
+          role="status"
+          style={{
+            padding: '0.75rem',
+            backgroundColor: 'rgba(20, 65, 35, 0.92)',
+            border: '1px solid #4ade80',
+            borderRadius: '4px',
+            color: '#bbf7d0',
+            fontSize: '0.9rem',
+          }}
+        >
+          ✅ Carta invocada y guardada correctamente en el grimorio remoto.
+        </div>
+      )}
+
+      {isError && (
+        <div
+          role="alert"
+          style={{
+            padding: '0.75rem',
+            backgroundColor: 'rgba(65, 18, 18, 0.92)',
+            border: '1px solid #ff6b6b',
+            borderRadius: '4px',
+            color: '#fecaca',
+            fontSize: '0.9rem',
+          }}
+        >
+          ⚠️ Error al guardar la carta: {errorMessage}
+        </div>
+      )}
+
       {/* Nombre de la carta */}
       <div>
         <label htmlFor="card-name">Nombre de la Carta *</label>
         <input
           id="card-name"
           type="text"
-          placeholder="Ej. Lightning Bolt, Nicol Bolas..."
+          placeholder="Ej. Lightning Bolt, Jace Beleren..."
           aria-invalid={!!errors.name}
           aria-describedby={errors.name ? 'error-name' : undefined}
           {...register('name')}
@@ -140,12 +230,12 @@ export function CreateCardForm({ onSubmitCard, isPending = false }) {
 
         <div>
           <label htmlFor="card-type">Tipo de Carta *</label>
-          {/* deps: ['power'] fuerza la revalidación cruzada de 'power' si cambia el tipo */}
           <select
             id="card-type"
             aria-invalid={!!errors.type}
             aria-describedby={errors.type ? 'error-type' : undefined}
-            {...register('type', { deps: ['power'] })}
+            {...typeRegisterProps}
+            onChange={handleCardTypeChange}
             style={singleLineStyle}
           >
             <option value="Creature">🐉 Creature (Criatura)</option>
@@ -163,10 +253,16 @@ export function CreateCardForm({ onSubmitCard, isPending = false }) {
         </div>
       </div>
 
-      {/* Coste de Maná y Fuerza */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+      {/* Estadísticas numéricas dinámicas según el tipo de carta */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: isCreature ? '1fr 1fr 1fr' : isPlaneswalker ? '1fr 1fr' : '1fr',
+          gap: '1rem',
+        }}
+      >
         <div>
-          <label htmlFor="card-mana">Coste de Maná (0 - 16) *</label>
+          <label htmlFor="card-mana">Maná (0 - 16) *</label>
           <input
             id="card-mana"
             type="number"
@@ -182,39 +278,79 @@ export function CreateCardForm({ onSubmitCard, isPending = false }) {
           )}
         </div>
 
-        <div>
-          <label htmlFor="card-power">Fuerza (0 - 20) *</label>
-          <input
-            id="card-power"
-            type="number"
-            aria-invalid={!!errors.power}
-            aria-describedby={errors.power ? 'error-power' : undefined}
-            {...register('power')}
-            style={singleLineStyle}
-          />
-          {errors.power && (
-            <span id="error-power" role="alert" style={errorStyle}>
-              ⚠️ {errors.power.message}
-            </span>
-          )}
-        </div>
+        {isCreature && (
+          <>
+            <div>
+              <label htmlFor="card-power">Fuerza (0 - 20) *</label>
+              <input
+                id="card-power"
+                type="number"
+                aria-invalid={!!errors.power}
+                aria-describedby={errors.power ? 'error-power' : undefined}
+                {...register('power')}
+                style={singleLineStyle}
+              />
+              {errors.power && (
+                <span id="error-power" role="alert" style={errorStyle}>
+                  ⚠️ {errors.power.message}
+                </span>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="card-health">Vida (1 - 20) *</label>
+              <input
+                id="card-health"
+                type="number"
+                aria-invalid={!!errors.health}
+                aria-describedby={errors.health ? 'error-health' : undefined}
+                {...register('health')}
+                style={singleLineStyle}
+              />
+              {errors.health && (
+                <span id="error-health" role="alert" style={errorStyle}>
+                  ⚠️ {errors.health.message}
+                </span>
+              )}
+            </div>
+          </>
+        )}
+
+        {isPlaneswalker && (
+          <div>
+            <label htmlFor="card-loyalty">Lealtad Inicial (1 - 20) *</label>
+            <input
+              id="card-loyalty"
+              type="number"
+              aria-invalid={!!errors.loyalty}
+              aria-describedby={errors.loyalty ? 'error-loyalty' : undefined}
+              {...register('loyalty')}
+              style={singleLineStyle}
+            />
+            {errors.loyalty && (
+              <span id="error-loyalty" role="alert" style={errorStyle}>
+                ⚠️ {errors.loyalty.message}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Efecto / Habilidad */}
+      {/* Descripción de la carta con placeholder adaptado al tipo seleccionado */}
       <div>
-        <label htmlFor="card-ability">Efecto / Texto de Reglas *</label>
+        <label htmlFor="card-ability">Descripción *</label>
         <textarea
           id="card-ability"
           rows="3"
-          placeholder="Ej. Lightning Bolt hace 3 puntos de daño a cualquier objetivo..."
-          aria-invalid={!!errors.ability}
-          aria-describedby={errors.ability ? 'error-ability' : undefined}
-          {...register('ability')}
+          placeholder={DESCRIPTION_PLACEHOLDERS[selectedType] || DESCRIPTION_PLACEHOLDERS.Creature}
+          aria-invalid={!!errors.Abilityes}
+          aria-describedby={errors.Abilityes ? 'error-ability' : undefined}
+          {...register('Abilityes')}
           style={textareaStyle}
         />
-        {errors.ability && (
+        {errors.Abilityes && (
           <span id="error-ability" role="alert" style={errorStyle}>
-            ⚠️ {errors.ability.message}
+            ⚠️ {errors.Abilityes.message}
           </span>
         )}
       </div>
@@ -226,14 +362,14 @@ export function CreateCardForm({ onSubmitCard, isPending = false }) {
           id="card-image"
           type="url"
           placeholder="https://..."
-          aria-invalid={!!errors.imageUrl}
-          aria-describedby={errors.imageUrl ? 'error-image' : undefined}
-          {...register('imageUrl')}
+          aria-invalid={!!errors.imageURL}
+          aria-describedby={errors.imageURL ? 'error-image' : undefined}
+          {...register('imageURL')}
           style={singleLineStyle}
         />
-        {errors.imageUrl && (
+        {errors.imageURL && (
           <span id="error-image" role="alert" style={errorStyle}>
-            ⚠️ {errors.imageUrl.message}
+            ⚠️ {errors.imageURL.message}
           </span>
         )}
       </div>
