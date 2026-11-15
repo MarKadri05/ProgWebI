@@ -1,8 +1,5 @@
 import { z } from 'zod';
 
-// QUÉ: Esquema base con los campos exactos definidos en el recurso /cards de MockAPI.
-// POR QUÉ: Mantiene una única fuente de verdad sincronizada con las claves de la API (incluyendo health, loyalty, imageURL y Abilityes).
-// QUÉ ALTERNATIVA SE DESCARTÓ: Duplicar esquemas distintos para el formulario y para la validación de respuesta del servidor.
 const baseCardSchema = z.object({
   name: z.string().min(3, 'El nombre de la carta debe tener al menos 3 caracteres'),
 
@@ -14,7 +11,6 @@ const baseCardSchema = z.object({
     error: 'Selecciona un tipo de carta válido',
   }),
 
-  // z.coerce.number() transforma el string del input HTML a tipo numérico antes de validar los rangos
   manaCost: z.coerce
     .number({ error: 'El coste de maná debe ser numérico' })
     .min(0, 'El coste mínimo de maná es 0')
@@ -35,14 +31,12 @@ const baseCardSchema = z.object({
     .min(0, 'La lealtad mínima es 0')
     .max(20, 'La lealtad máxima permitida es 20'),
 
-  Abilityes: z.string().min(10, 'Describe el efecto o habilidad (mínimo 10 caracteres)'),
+  // Clave actualizada a description
+  description: z.string().min(10, 'Introduce una descripción o efecto válido (mínimo 10 caracteres)'),
 
   imageURL: z.string().url('Debes introducir una URL de imagen válida'),
 });
 
-// QUÉ: Validación cruzada múltiple mediante .superRefine().
-// POR QUÉ: Comprueba reglas dependientes entre type, power, health y loyalty en una sola pasada y asigna cada error a su campo exacto.
-// QUÉ ALTERNATIVA SE DESCARTÓ: Validar las reglas de juego con condicionales manuales dentro del evento onSubmit.
 const validateMagicStats = (data, ctx) => {
   if (data.type !== 'Creature') {
     if (data.power > 0) {
@@ -82,10 +76,8 @@ const validateMagicStats = (data, ctx) => {
   }
 };
 
-// Esquema utilizado por React Hook Form mediante zodResolver
 export const cardSchema = baseCardSchema.superRefine(validateMagicStats);
 
-// Esquema extendido con el identificador remoto para validar respuestas GET con safeParse (Bonus M4)
 export const apiCardSchema = baseCardSchema
   .extend({
     id: z.union([z.string(), z.number()]),

@@ -2,7 +2,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cardSchema } from '../schemas/cardSchema';
 
-// Constante de módulo para adaptar el texto de ejemplo según el tipo de carta seleccionado
 const DESCRIPTION_PLACEHOLDERS = {
   Creature: 'Ej. Vuela, prisa. Cuando esta criatura entra al campo de batalla, inflige 2 puntos de daño...',
   Instant: 'Ej. Inflige 3 puntos de daño a cualquier objetivo o contrarresta el hechizo objetivo...',
@@ -12,16 +11,6 @@ const DESCRIPTION_PLACEHOLDERS = {
   Planeswalker: 'Ej. +2: Roba una carta. -3: Destruye la criatura objetivo. -7: Obtienes un emblema...',
 };
 
-/**
- * Formulario no controlado para registrar nuevas cartas personalizadas de Magic: The Gathering.
- * @param {{
- *   onSubmitCard: (data: Object, resetForm: Function) => void,
- *   isPending: boolean,
- *   isSuccess: boolean,
- *   isError: boolean,
- *   errorMessage?: string
- * }} props
- */
 export function CreateCardForm({
   onSubmitCard,
   isPending = false,
@@ -29,9 +18,6 @@ export function CreateCardForm({
   isError = false,
   errorMessage = '',
 }) {
-  // QUÉ: Inicialización de React Hook Form conectado a cardSchema mediante zodResolver.
-  // POR QUÉ: Delega la validación a una única fuente de verdad externa y evita re-renderizados por cada pulsación de tecla.
-  // QUÉ ALTERNATIVA SE DESCARTÓ: Formularios controlados con useState por cada campo, descartado por penalizar el rendimiento.
   const {
     register,
     handleSubmit,
@@ -49,27 +35,21 @@ export function CreateCardForm({
       power: 3,
       health: 3,
       loyalty: 0,
-      Abilityes: '',
+      description: '', // Actualizado aquí
       imageURL: 'https://cards.scryfall.io/art_crop/front/7/7/77c6fa74-5543-42ac-9ead-0e890b188e99.jpg',
     },
   });
 
-  // QUÉ: Suscripción exclusiva al campo 'type' mediante watch().
-  // POR QUÉ: Permite renderizar condicionalmente Fuerza/Vida (Creature) o Lealtad (Planeswalker) y adaptar el placeholder sin duplicar estado con useState.
-  // QUÉ ALTERNATIVA SE DESCARTÓ: Crear estados locales extra [isCreature, setIsCreature] que podrían desincronizarse al hacer reset().
   const selectedType = watch('type');
   const isCreature = selectedType === 'Creature';
   const isPlaneswalker = selectedType === 'Planeswalker';
 
-  // Extraemos el onChange nativo de register('type') para sincronizar estadísticas al cambiar el tipo
   const { onChange: handleTypeFieldChange, ...typeRegisterProps } = register('type');
 
   const handleCardTypeChange = (event) => {
     handleTypeFieldChange(event);
     const nextType = event.target.value;
 
-    // QUÉ: Ajustar power, health y loyalty según el tipo seleccionado.
-    // POR QUÉ: Al desmontar los inputs condicionales de la vista, RHF conserva los valores en memoria; inicializarlos evita errores ocultos de validación.
     if (nextType === 'Creature') {
       setValue('power', 3, { shouldValidate: true });
       setValue('health', 3, { shouldValidate: true });
@@ -85,14 +65,10 @@ export function CreateCardForm({
     }
   };
 
-  // QUÉ: Manejador intermedio que recibe únicamente datos ya validados y limpios por Zod.
-  // POR QUÉ: handleSubmit bloquea la ejecución si existe cualquier error y permite pasar reset() para limpiar tras guardar.
-  // QUÉ ALTERNATIVA SE DESCARTÓ: Validar manualmente con bloques if/else dentro del envío.
   const handleValidSubmit = (validData) => {
     onSubmitCard(validData, () => reset());
   };
 
-  // Estilo base con boxSizing: 'border-box' para mantener simetría exacta en todos los bordes
   const baseFieldStyle = {
     width: '100%',
     boxSizing: 'border-box',
@@ -105,14 +81,12 @@ export function CreateCardForm({
     fontSize: '0.88rem',
   };
 
-  // Padding horizontal y altura fija (42px) para que inputs numéricos y desplegables coincidan
   const singleLineStyle = {
     ...baseFieldStyle,
     height: '42px',
     padding: '0 0.65rem',
   };
 
-  // Estilo específico para el área de texto de descripción
   const textareaStyle = {
     ...baseFieldStyle,
     padding: '0.65rem',
@@ -150,7 +124,6 @@ export function CreateCardForm({
         ✨ Forjar Nueva Carta de Magic
       </h2>
 
-      {/* Feedback accesible de éxito y error de la mutación */}
       {isSuccess && (
         <div
           role="status"
@@ -183,7 +156,6 @@ export function CreateCardForm({
         </div>
       )}
 
-      {/* Nombre de la carta */}
       <div>
         <label htmlFor="card-name">Nombre de la Carta *</label>
         <input
@@ -202,7 +174,6 @@ export function CreateCardForm({
         )}
       </div>
 
-      {/* Color de Maná y Tipo de Carta */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
         <div>
           <label htmlFor="card-color">Color de Maná *</label>
@@ -253,7 +224,6 @@ export function CreateCardForm({
         </div>
       </div>
 
-      {/* Estadísticas numéricas dinámicas según el tipo de carta */}
       <div
         style={{
           display: 'grid',
@@ -336,26 +306,24 @@ export function CreateCardForm({
         )}
       </div>
 
-      {/* Descripción de la carta con placeholder adaptado al tipo seleccionado */}
       <div>
-        <label htmlFor="card-ability">Descripción *</label>
+        <label htmlFor="card-description">Descripción *</label>
         <textarea
-          id="card-ability"
+          id="card-description"
           rows="3"
           placeholder={DESCRIPTION_PLACEHOLDERS[selectedType] || DESCRIPTION_PLACEHOLDERS.Creature}
-          aria-invalid={!!errors.Abilityes}
-          aria-describedby={errors.Abilityes ? 'error-ability' : undefined}
-          {...register('Abilityes')}
+          aria-invalid={!!errors.description}
+          aria-describedby={errors.description ? 'error-description' : undefined}
+          {...register('description')}
           style={textareaStyle}
         />
-        {errors.Abilityes && (
-          <span id="error-ability" role="alert" style={errorStyle}>
-            ⚠️ {errors.Abilityes.message}
+        {errors.description && (
+          <span id="error-description" role="alert" style={errorStyle}>
+            ⚠️ {errors.description.message}
           </span>
         )}
       </div>
 
-      {/* URL de la imagen */}
       <div>
         <label htmlFor="card-image">URL de Ilustración *</label>
         <input

@@ -12,15 +12,9 @@ const COLOR_BADGES = {
   Colorless: '💎 Colorless',
 };
 
-/**
- * Listado asíncrono de cartas gestionado con TanStack Query v5.
- */
 export function CardList() {
   const [simulateCorrupt, setSimulateCorrupt] = useState(false);
 
-  // QUÉ: Consulta remota declarativa mediante useQuery con clave de caché parametrizada.
-  // POR QUÉ: TanStack Query gestiona automáticamente la caché, estados de carga/error y revalidación en segundo plano.
-  // QUÉ ALTERNATIVA SE DESCARTÓ: Combinar useEffect y múltiples useState manuales para controlar loading, error y data.
   const {
     data: cards = [],
     isLoading,
@@ -35,7 +29,6 @@ export function CardList() {
 
   return (
     <section style={{ maxWidth: '1000px', margin: '0 auto' }}>
-      {/* Cabecera del grimorio y botón de prueba para el Bonus de safeParse */}
       <div
         style={{
           display: 'flex',
@@ -90,7 +83,6 @@ export function CardList() {
         </div>
       </div>
 
-      {/* Estado 1: Cargando */}
       {isLoading && (
         <div
           role="status"
@@ -107,7 +99,6 @@ export function CardList() {
         </div>
       )}
 
-      {/* Estado 2: Error de red o fallo de integridad Zod safeParse */}
       {isError && (
         <div
           role="alert"
@@ -124,14 +115,12 @@ export function CardList() {
         </div>
       )}
 
-      {/* Estado 3: Listado vacío */}
       {!isLoading && !isError && cards.length === 0 && (
         <p style={{ textAlign: 'center', color: '#ccc' }}>
           No hay cartas registradas todavía. Utiliza el formulario superior para forjar la primera.
         </p>
       )}
 
-      {/* Estado 4: Cartas validadas correctamente */}
       {!isLoading && !isError && cards.length > 0 && (
         <div
           style={{
@@ -179,8 +168,9 @@ export function CardList() {
                   <span>{COLOR_BADGES[card.color] || card.color}</span> · <span>{card.type}</span>
                 </div>
 
+                {/* Renderizado de description */}
                 <p style={{ fontSize: '0.88rem', margin: '0.3rem 0', flex: 1, lineHeight: 1.4 }}>
-                  {card.Abilityes}
+                  {card.description}
                 </p>
 
                 {card.type === 'Creature' && (

@@ -16,6 +16,7 @@ npm-debug.log*
 # Variables de entorno y credenciales
 .env
 .env.local
+.env.*.local
 
 # Futuras misiones con Node / Vite / React / Next.js
 node_modules/
