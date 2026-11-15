@@ -9,7 +9,7 @@ Aplicación web interactiva desarrollada con **Vite + React 19 (JSX)** para la c
 ## Funcionalidades Implementadas
 
 - **Formulario no controlado (`CreateCardForm`):** Registro de cartas con validación reactiva mediante `zodResolver`, atributos de accesibilidad (`htmlFor`, `aria-invalid`, `aria-describedby`, `role="alert"`) y desactivación de globos nativos del navegador (`noValidate`).
-- **Adaptación dinámica por tipo de carta:** Renderizado condicional de estadísticas numéricas según el tipo seleccionado (`Fuerza` y `Vida` para *Creature*, `Lealtad Inicial` para *Planeswalker*, y ocultación automática en hechizos, encantamientos y artefactos), además de textos de ejemplo (*placeholders*) contextuales en la descripción.
+- **Adaptación dinámica por tipo de carta:** Renderizado condicional de estadísticas numéricas según el tipo seleccionado (`Fuerza` y `Vida` para *Creature*, `Lealtad Inicial` para *Planeswalker*, y ocultación automática en hechizos, encantamientos y artefactos), adaptando dinámicamente los textos de ayuda (*placeholders*) en la descripción.
 - **Sincronización remota con TanStack Query:** Consulta declarativa mediante `useQuery` y envío con `useMutation`, invalidando automáticamente la clave de caché `['mtg-cards']` tras cada alta para refrescar el grimorio sin recargar la página.
 - **Validación defensiva de respuestas (`safeParse` · BONUS):** Verificación estructural de los datos recibidos desde la API mediante `apiCardsListSchema.safeParse()`, incluyendo un botón de prueba en la interfaz para simular un registro corrupto procedente del servidor e interceptar el fallo con precisión.
 
@@ -23,7 +23,11 @@ Aplicación web interactiva desarrollada con **Vite + React 19 (JSX)** para la c
    npm install
    ```
 
-2. [COMPLETAR: indicar cómo se configura el endpoint de MockAPI, por ejemplo la URL fija en `cardService.js` o la variable de entorno en `.env`.]
+2. Configurar las variables de entorno creando un archivo `.env` en la raíz del proyecto basado en el endpoint REST:
+
+   ```env
+   VITE_API_URL=https://<TU_PROYECTO_ID>.mockapi.io/api/v1/cards
+   ```
 
 3. Ejecutar el servidor de desarrollo de Vite:
 
@@ -32,8 +36,6 @@ Aplicación web interactiva desarrollada con **Vite + React 19 (JSX)** para la c
    ```
 
 4. Abrir en el navegador la URL local indicada por Vite (por ejemplo: `http://localhost:5173/`).
-
-5. Utilizar la barra superior de navegación para seleccionar **Misión 4: Deck Builder**.
 
 ---
 
@@ -45,13 +47,10 @@ Aplicación web interactiva desarrollada con **Vite + React 19 (JSX)** para la c
 
 - Estructuración por fases del proyecto para integrar React Hook Form, Zod y TanStack Query v5 dentro de una arquitectura modular.
 - Configuración del proveedor global `QueryClientProvider` en el punto de entrada (`src/main.jsx`) y diseño del selector condicional de misiones en `src/App.jsx`.
-- Apoyo en la maquetación visual en CSS (estética oscura con bordes dorados, distribución en rejilla `CSS Grid`, `box-sizing: border-box` y simetría de alturas en los controles del formulario).
-- Asistencia en la configuración de reglas cruzadas de Zod mediante `.superRefine()` para validar dependencias entre el tipo de carta y sus estadísticas (`power`, `health` y `loyalty`).
-- Estructuración de la prueba controlada de integridad de datos mediante `safeParse()` para el reto opcional de la misión.
+- Asistencia en la maquetación visual en CSS (estética oscura con bordes dorados, distribución en rejilla `CSS Grid`, `box-sizing: border-box` y simetría de alturas en los controles del formulario).
+- Asistencia en la configuración de reglas cruzadas de Zod mediante `.superRefine()` para validar dependencias entre el tipo de carta y sus estadísticas (`power`, `health` y `loyalty`), además de la normalización del campo `description`.
 
 ### Prompts reales utilizados
-
-> *"¿Cómo se integra `zodResolver` dentro de la configuración inicial de `useForm` para que Zod actúe como única fuente de verdad sin depender de las reglas nativas de HTML5?"*
 
 > *"¿Cómo se pueden ocultar dinámicamente los campos de fuerza (ataque) y vida en el formulario cuando el tipo de carta seleccionado no sea una criatura, manteniendo la validación sincronizada en React Hook Form y Zod?"*
 
@@ -88,42 +87,6 @@ Aplicación web interactiva desarrollada con **Vite + React 19 (JSX)** para la c
 
 ### 4. Validación defensiva del contrato de API mediante `safeParse()` (reto bonus)
 
-- **Qué:** En `cardService.js` se valida el arreglo devuelto por `response.json()` contra `apiCardsListSchema.safeParse()` antes de entregar los datos a `useQuery`.
+- **Qué:** En `cardService.js` se valida el arreglo devuelto por `response.json()` contra `apiCardsListSchema.safeParse()` antes de entregar los datos a `useQuery`, utilizando la propiedad `description` sincronizada con MockAPI.
 - **Por qué:** A diferencia de `.parse()`, `safeParse()` no lanza una excepción no controlada, sino que devuelve un objeto discriminado `{ success, data, error }` que permite extraer la ruta exacta del campo corrupto (`firstIssue.path`) y presentar un mensaje de diagnóstico claro en la interfaz.
 - **Alternativa descartada:** Confiar ciegamente en la estructura del JSON recibido desde el servidor e inyectarlo directamente en el renderizado de tarjetas.
-
-### 5. Accesibilidad semántica (`role="alert"` y `aria-describedby`) frente a mensajes visuales simples
-
-- **Qué:** Asociar cada campo inválido con su mensaje de error mediante `aria-invalid`, `aria-describedby` y contenedores con `role="alert"`, manteniendo el botón de envío siempre pulsable cuando no hay una petición en curso.
-- **Por qué:** Un botón permanentemente deshabilitado impide recibir el foco mediante teclado y no informa al usuario de qué campo falla. Los atributos ARIA permiten que los lectores de pantalla anuncien automáticamente los errores de validación al intentar enviar el formulario.
-- **Alternativa descartada:** Mostrar textos de error en rojo sin atributos ARIA o deshabilitar el botón de envío mientras existan errores.
-
-### 6. Selector de misiones por estado (`useState`) frente a múltiples puntos de entrada
-
-- **Qué:** Mantener un único punto de entrada (`src/main.jsx`) y alternar entre prácticas mediante renderizado condicional en `src/App.jsx`.
-- **Por qué:** Vite resuelve la aplicación a partir de un único `index.html` raíz. El renderizado condicional mediante estado local mantiene un único árbol de dependencias y desmonta del DOM la vista inactiva sin sobrecargar el proyecto.
-- **Alternativa descartada:** Crear múltiples archivos `main.jsx` independientes o configurar un enrutador externo para dos vistas.
-
----
-
-## Licencia
-
-Este proyecto se distribuye bajo la Licencia **MIT**.
-
----
-
-# Bitácora de Decisiones Técnicas · Misión 4 (Magic Deck Builder)
-
-## Fase 1: El Contrato de Datos (Zod y Arquitectura Global)
-
-- **Proveedor global (`src/main.jsx`):** Se envuelve `<App />` en `<QueryClientProvider client={queryClient}>` instanciando `new QueryClient()` fuera del componente raíz para evitar recrear la caché en cada renderizado.
-- **Única fuente de verdad (`cardSchema.js`):** Se define el esquema de validación antes de construir la interfaz.
-  - `z.coerce.number()`: Necesario porque los elementos `<input type="number">` del DOM siempre devuelven valores de tipo `string`.
-  - `.refine()` con `path: ['power']`: Valida la regla de negocio cruzada (solo `Creature` puede tener `power > 0`) y dirige el mensaje de error exactamente bajo el campo de fuerza.
-
-## Fase 2: La Interfaz de Entrada (React Hook Form y UX)
-
-- **Componentes no controlados (`register`):** Evitan re-renderizados en cada pulsación de tecla al leer los valores directamente desde las referencias del DOM al ejecutar `handleSubmit`.
-- **Revalidación dependiente (`deps: ['power']`):** Configurado en el selector `type` para que, si el usuario cambia el tipo de carta después de haber introducido fuerza, Zod reevalúe la regla cruzada al instante.
-- **Accesibilidad (`noValidate` + ARIA):** `noValidate` suprime las alertas nativas del navegador para ceder el control total a Zod; `aria-invalid`, `aria-describedby` y `role="alert"` garantizan compatibilidad con lectores de pantalla.
-- **Consistencia visual (`box-sizing: border-box`):** Unifica el cálculo de ancho y altura (`42px`) entre elementos `<input>` y `<select>` para evitar desbordamientos laterales y cortes verticales de texto.
