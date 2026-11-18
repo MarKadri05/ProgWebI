@@ -1,2 +1,16 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-aurora-50: oklch(0.97 0.02 275);
+  --color-aurora-100: oklch(0.93 0.04 275);
+  --color-aurora-200: oklch(0.86 0.08 275);
+  --color-aurora-300: oklch(0.76 0.14 275);
+  --color-aurora-400: oklch(0.65 0.20 275);
+  --color-aurora-500: oklch(0.55 0.24 275);
+  --color-aurora-600: oklch(0.47 0.23 275);
+  --color-aurora-700: oklch(0.39 0.20 275);
+
+  --font-display: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --radius-card: 1.25rem;
+}

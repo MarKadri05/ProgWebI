@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import Mision1Lumen from './MisionesOpcionales/Mision1/Mision1Lumen';
 import Mision2DevFolio from './MisionesOpcionales/Mision2/Mision2DevFolio';
-// Cuando crees la Misión 3, impórtala aquí:
-// import Mision3 from './MisionesOpcionales/Mision3/Mision3';
+import Showcase from './MisionesOpcionales/Mision3/Showcase';
 
 export default function App() {
-  // Arranca directamente en la Misión 2
-  const [misionActiva, setMisionActiva] = useState('m2');
+  // Arranca directamente en la Misión 3 (Aurora UI)
+  const [misionActiva, setMisionActiva] = useState('m3');
 
   // Restaura el tema guardado en localStorage al cargar
   const [isDark, setIsDark] = useState(() => {
@@ -61,7 +60,7 @@ export default function App() {
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
             }`}
           >
-            M3 · Pendiente
+            M3 · Aurora UI 🧱
           </button>
         </div>
 
@@ -78,11 +77,7 @@ export default function App() {
       {/* Renderizado condicional según la misión seleccionada */}
       {misionActiva === 'm1' && <Mision1Lumen />}
       {misionActiva === 'm2' && <Mision2DevFolio />}
-      {misionActiva === 'm3' && (
-        <p className="p-12 text-center text-slate-500">
-          Misión 3 pendiente de enunciado.
-        </p>
-      )}
+      {misionActiva === 'm3' && <Showcase />}
     </div>
   );
 }
