@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react';
 import Mision1Lumen from './MisionesOpcionales/Mision1/Mision1Lumen';
+import Mision2DevFolio from './MisionesOpcionales/Mision2/Mision2DevFolio';
+// Cuando crees la Misión 3, impórtala aquí:
+// import Mision3 from './MisionesOpcionales/Mision3/Mision3';
 
 export default function App() {
-  // Estado para alternar entre misiones del Tema 5
-  const [misionActiva, setMisionActiva] = useState('m1');
+  // Arranca directamente en la Misión 2
+  const [misionActiva, setMisionActiva] = useState('m2');
 
-  // Reto extra Misión 1: restaurar el tema desde localStorage al cargar
+  // Restaura el tema guardado en localStorage al cargar
   const [isDark, setIsDark] = useState(() => {
     return localStorage.getItem('tema-u5') === 'dark';
   });
 
-  // Sincroniza la clase 'dark' en <html> y persiste en localStorage
+  // Sincroniza la clase 'dark' en <html> y guarda la preferencia
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark);
     localStorage.setItem('tema-u5', isDark ? 'dark' : 'light');
@@ -18,11 +21,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
-      {/* Barra superior fija para cambiar de misión y alternar tema */}
+      {/* Barra superior fija para alternar entre misiones y modo oscuro */}
       <nav className="sticky top-0 z-50 flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 bg-white/80 px-6 py-3 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/80">
         <div className="flex flex-wrap items-center gap-2">
           <span className="mr-2 text-sm font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400">
-            U5 · Misiones
+            U5 · Misiones Opcionales
           </span>
 
           <button
@@ -46,7 +49,7 @@ export default function App() {
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
             }`}
           >
-            M2 · Próximamente
+            M2 · DevFolio 🖼️
           </button>
 
           <button
@@ -58,11 +61,11 @@ export default function App() {
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
             }`}
           >
-            M3 · Próximamente
+            M3 · Pendiente
           </button>
         </div>
 
-        {/* Checkpoint 5 Misión 1: Botón fijo arriba a la derecha */}
+        {/* Botón fijo de Modo Oscuro arriba a la derecha */}
         <button
           type="button"
           onClick={() => setIsDark((prev) => !prev)}
@@ -72,13 +75,13 @@ export default function App() {
         </button>
       </nav>
 
-      {/* Renderizado condicional de la misión seleccionada */}
+      {/* Renderizado condicional según la misión seleccionada */}
       {misionActiva === 'm1' && <Mision1Lumen />}
-      {misionActiva === 'm2' && (
-        <p className="p-12 text-center text-slate-500">Misión 2 pendiente de enunciado.</p>
-      )}
+      {misionActiva === 'm2' && <Mision2DevFolio />}
       {misionActiva === 'm3' && (
-        <p className="p-12 text-center text-slate-500">Misión 3 pendiente de enunciado.</p>
+        <p className="p-12 text-center text-slate-500">
+          Misión 3 pendiente de enunciado.
+        </p>
       )}
     </div>
   );
