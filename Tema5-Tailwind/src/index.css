@@ -2,6 +2,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  /* --- Tokens existentes (Misión Opcional 3 · Aurora UI) --- */
   --color-aurora-50: oklch(0.97 0.02 275);
   --color-aurora-100: oklch(0.93 0.04 275);
   --color-aurora-200: oklch(0.86 0.08 275);
@@ -13,4 +14,30 @@
 
   --font-display: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
   --radius-card: 1.25rem;
+
+  /* --- Tokens Misión Principal 5 · MTG Grimorio --- */
+  /* Fondos y superficies (Claro: Pergamino / Oscuro: Vacío) */
+  --color-grimorio-parchment: #f4f1ea;
+  --color-grimorio-vellum: #fbf9f5;
+  --color-grimorio-void: #0d0d0f;
+  --color-grimorio-obsidian: #16161a;
+
+  /* Tintas y acentos con contraste WCAG AA verificado */
+  --color-grimorio-ink: #1a1816;
+  --color-grimorio-ash: #57524a;
+  --color-grimorio-ivory: #f1e8d9;
+  --color-grimorio-mist: #b8b0a2;
+  --color-grimorio-gold: #d4af37;
+  --color-grimorio-bronze: #8a6914;
+
+  /* Tokens de Maná de Magic */
+  --color-mana-white: #f8e7b9;
+  --color-mana-blue: #0e68ab;
+  --color-mana-black: #2b252c;
+  --color-mana-red: #d3202a;
+  --color-mana-green: #00733e;
+
+  /* Tipografías del Grimorio (generan font-grimorio y font-body) */
+  --font-grimorio: "Cinzel", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
 }
